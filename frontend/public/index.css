@@ -8,6 +8,14 @@
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
+.sidebar {
+    border-radius: 0px 10px 0 0;
+}
+
+#collapse:focus, #collapse:active:focus, #collapse.active:focus {
+    box-shadow: none !important;
+}
+
 .border-card {
     background-color: transparent;
     -webkit-box-shadow: rgba(0, 0, 0, 0.8) 0px 0 10px;
@@ -53,6 +61,7 @@ body, #root {
 ::-webkit-scrollbar {
     width: 10px;
     background-color: #757F9A;
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -62,12 +71,12 @@ body, #root {
 
 @media (max-height: 570px) {
     .list-group{
-        max-height: 195px;
+        max-height: 250px;
     }
 }
 
 @media (min-height: 580px) {
     .list-group{
-        max-height: 245px;
+        max-height: 310px;
     }
 }
