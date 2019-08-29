@@ -1,6 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const SignUp = (props) => {
+
+    const [Loading, setLoading] = useState(false);
+
+    function _SignUp() {
+        setLoading(true);
+    }
+
     return (
         <div className="container h-100 animated fadeIn">
             <div className="row h-100 justify-content-center">
@@ -20,7 +27,7 @@ const SignUp = (props) => {
                                     <p className="text-center font-weight-bold text-white mb-0">DevChat</p>
                                 </div>
                                 <div className="card-body border-shadow border-bottom">
-                                    <form>
+                                    <form onSubmit={_SignUp.bind(this)}>
                                         <div className="input-group">
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text" id="user"><i className="fa fa-user"></i></span>
@@ -36,9 +43,10 @@ const SignUp = (props) => {
                                         <div className="pt-3"></div>
                                         <div className="row justify-content-center">
                                             <div className="col align-self-center">
-                                                <button type="button" className="btn btn-primary w-100 gradient">
-                                                    <span className="pr-1"><i className="fas fa-angle-double-right"></i></span>
-                                                    Sign Up
+                                                <button type="submit" className="btn btn-primary w-100 gradient" disabled={Loading}>
+                                                    {
+                                                        Loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : <span>Sign Up</span>
+                                                    }
                                                 </button>
                                             </div>
                                         </div>
@@ -49,13 +57,9 @@ const SignUp = (props) => {
                     </div>
                     <div className="row justify-content-center pt-3">
                         <div className="col-md-3 align-self-center">
-                            <button type="button" className="btn btn-primary w-100 gradient" onClick={() => props.history.push('/Login')}>
-                                <div className="row justify-content-center">
-                                    <span className="pr-1"><i className="fas fa-user-plus fa-lg"></i></span>
-                                </div>
-                                <div className="row justify-content-center">
-                                    You do have an account?
-                                </div>
+                            <button type="button" className="btn btn-primary w-100 gradient" onClick={() => props.history.push('/Login')} disabled={Loading}>
+                                <span className="pr-1"><i className="fas fa-user fa-lg"></i></span>
+                                <p className="text-center font-weight-bold text-white mb-0">You do have an account?</p>
                             </button>
                         </div>
                     </div>
