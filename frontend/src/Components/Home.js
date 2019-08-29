@@ -2,12 +2,12 @@ import React from 'react';
 
 function Home() {
 
-    var conver = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 6, 6, 6, 7, 6, 7,]
+    var conver = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14,15]
 
     return (
         <div className="container-fluid h-100 animated fadeIn h-100">
             <div className="row h-100">
-                <nav className="col-md-2 d-none d-md-block bg-light sidebar gradient overflow-auto">
+                <nav className="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar gradient overflow-auto">
                     <div className="row pt-3 justify-content-center">
                         <div className="col-5">
                             <img src="https://image.flaticon.com/icons/svg/660/660611.svg" className="rounded-circle float-right" alt="Cinque Terre" />
@@ -26,13 +26,27 @@ function Home() {
                             </div>
                         </div>
                     </div>
-                    <div className="row pt-3">
+                    <div className="row pt-3 justify-content-center">
+                        <h6 className="text-center font-weight-bold text-white pr-1">Direct message</h6>
                         <ul className="list-group w-100 bg-transparent">
                             {
                                 conver.map((item, index) =>
-                                    <li className="list-group-item bg-transparent d-flex justify-content-between align-items-center" key={index}>
+                                    <li className="list-group-item bg-transparent d-flex justify-content-around align-items-start" key={index}>
                                         <img src="https://image.flaticon.com/icons/svg/660/660611.svg" className="rounded-circle float-right" alt="Cinque Terre" width={30} height={30} />
                                         <h6 className="text-center font-weight-bold text-white mb-0">KillGamer</h6>
+                                    </li>
+                                )
+                            }
+                        </ul>
+                    </div>
+                    <div className="row pt-3 justify-content-center">
+                        <h6 className="text-center font-weight-bold text-white pr-1">Groups</h6>
+                        <ul className="list-group w-100 bg-transparent">
+                            {
+                                conver.map((item, index) =>
+                                    <li className="list-group-item bg-transparent d-flex justify-content-around align-items-start" key={index}>
+                                        <img src="https://image.flaticon.com/icons/svg/660/660611.svg" className="rounded-circle float-right" alt="Cinque Terre" width={30} height={30} />
+                                        <h6 className="text-center font-weight-bold text-white mb-0">{item}</h6>
                                     </li>
                                 )
                             }

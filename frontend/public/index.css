@@ -38,8 +38,36 @@ body, #root {
 }
 
 .list-group{
-    max-height: 300px;
     margin-bottom: 10px;
-    overflow:scroll;
+    overflow: scroll;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #757F9A;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    background-color: #757F9A;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.44, rgb(122, 153, 217)), color-stop(0.72, rgb(73, 125, 189)), color-stop(0.86, rgb(28, 58, 148)));
+}
+
+@media (max-height: 570px) {
+    .list-group{
+        max-height: 195px;
+    }
+}
+
+@media (min-height: 580px) {
+    .list-group{
+        max-height: 245px;
+    }
 }
