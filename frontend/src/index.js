@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 import Login from './Components/Login';
-import SignUp from "./Components/SignUp";
+import SignUp from './Components/SignUp';
 import Home from './Components/Home';
 
 //define routes of the app
