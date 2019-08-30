@@ -2,17 +2,17 @@ const Auth = require('../Services/Auth.service');
 
 exports.isAuth = (req, res, next) => {
     if (!req.headers.authorization) {
-        return res.status(403).send({ message: 'No tienes autorización' })
+        return res.status(403).send();
     }
 
-    const token = req.headers.authorization.split(' ')[1]
+    const token = req.headers.authorization.split(' ')[1];
 
-    Auth.decodeToken(token)
+    Auth.Decode(token)
         .then(response => {
-            req.headers._id = response
-            next()
+            req.headers._id = response;
+            next();
         })
         .catch(response => {
-            res.status(response.status)
+            return res.status(response.status).send({ Message: response.message });
         });
 }

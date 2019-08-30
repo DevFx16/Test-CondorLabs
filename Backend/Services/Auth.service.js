@@ -6,7 +6,7 @@ const { Config } = require('../Config/App.config');
 exports.CreateToken = User => {
     //token payload
     const payload = {
-        sub: user._id,
+        sub: User._id,
         iat: Moment().unix(),
         exp: Moment().add(15, 'days').unix()
     }
@@ -19,9 +19,9 @@ exports.CreateToken = User => {
 exports.Decode = token => {
     const decoded = new Promise((resolve, reject) => {
         try {
-            const payload = jwt.decode(token, Config.Token)
+            const payload = JWT.decode(token, Config.Token)
             //valid if it has not expired
-            if (payload.exp <= moment().unix()) {
+            if (payload.exp <= Moment().unix()) {
                 reject({
                     status: 401,
                     message: 'Session expired re-enter'
@@ -29,6 +29,7 @@ exports.Decode = token => {
             }
             resolve(payload.sub)
         } catch (err) {
+            console.log(err);
             reject({
                 status: 500,
                 message: 'Invalid Token'

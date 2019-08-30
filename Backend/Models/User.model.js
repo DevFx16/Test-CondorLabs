@@ -5,9 +5,10 @@ const schema = Moongoose.Schema;
 
 //define schemaS
 const UserSchema = new schema({
-    Username: { type: String, required: true },
+    Username: { type: String, required: true, unique: true },
     Password: { type: String, required: true },
     DisplayName: { type: String, required: true },
+    UrlImage: { type: String, default: 'https://image.flaticon.com/icons/svg/660/660611.svg' },
     CreateAt: { type: Date, default: Date.now }
 });
 

@@ -9,20 +9,20 @@ const mongoose = require('mongoose')
 app.set('port', Config.Port);
 
 //Uses
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(errors());
-app.use(express.static(path.join(__dirname+'/Frontend/build')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname + '/Frontend/build')));
 
 //sent the frontend made in react
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname+'/Frontend/build/index.html'))
+  res.sendFile(path.join(__dirname + '/Frontend/build/index.html'))
 });
 
 require('./Backend/Routes/User.routes').UserRoutes(app);
 
-mongoose.connect(Config.Db, (err, res) => {
+mongoose.connect(Config.Db, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, (err, res) => {
   if (err) {
     return console.log(`${err}`)
   }
@@ -30,5 +30,5 @@ mongoose.connect(Config.Db, (err, res) => {
 
   app.listen(Config.Port, () => {
     console.log(`http://localhost:${Config.Port}`)
-  })
-})
+  });
+});
