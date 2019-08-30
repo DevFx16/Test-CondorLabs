@@ -32,7 +32,6 @@ function Home() {
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
                         </div>
-                        <div className="col"></div>
                         <div className="col">
                             <button type="button" className="btn btn-link text-white">
                                 <i className="fas fa-user-cog fa-lg"></i>

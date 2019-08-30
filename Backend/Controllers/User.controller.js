@@ -23,3 +23,7 @@ exports._Put = (req, res) => {
 exports._Delete = (req, res) => {
 
 }
+
+exports._Login = (req, res) => {
+
+}
