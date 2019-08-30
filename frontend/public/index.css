@@ -69,14 +69,35 @@ body, #root {
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.44, rgb(122, 153, 217)), color-stop(0.72, rgb(73, 125, 189)), color-stop(0.86, rgb(28, 58, 148)));
 }
 
-@media (max-height: 570px) {
+@media (max-height: 600px) {
     .list-group{
         max-height: 250px;
     }
+    .chat{
+       height: 550px;
+    }
 }
 
-@media (min-height: 580px) {
+@media (min-height: 601px) {
     .list-group{
-        max-height: 310px;
+        max-height: 270px;
+    }
+    .chat{
+        height: 600px;
+     }
+}
+
+@media (min-height: 700px) {
+    .list-group{
+        max-height: 350px;
+    }
+    .chat{
+        height: 680px;
+    }
+}
+
+@media (min-height: 800px) {
+    .chat{
+        height: 785px;
     }
 }
