@@ -14,4 +14,5 @@ if [ -d "$node_modules"];
 fi
 npm run build
 cd ..
+kill $(lsof -t -i: 3000)
 npm start
