@@ -31,16 +31,15 @@ function Home() {
                             </div>
                         </div>
                         <div className="row w-100 justify-content-between mx-0 pt-3">
-                            <div className="col">
-                                <button type="button" className="btn btn-link text-white" onClick={() => console.log('Hol')}>
-                                    <i className="fas fa-users fa-lg"></i>
-                                </button>
-                            </div>
-                            <div className="col">
-                                <button type="button" className="btn btn-link text-white">
-                                    <i className="fas fa-user-cog fa-lg"></i>
-                                </button>
-                            </div>
+                            <button type="button" className="btn btn-link text-white" onClick={() => console.log('Hol')}>
+                                <i className="fas fa-users fa-lg"></i>
+                            </button>
+                            <button type="button" className="btn btn-link text-white">
+                                <i className="fas fa-user-cog fa-lg"></i>
+                            </button>
+                            <button type="button" className="btn btn-link text-white">
+                                <i className="fas fa-sign-out-alt fa-lg"></i>
+                            </button>
                         </div>
                         <div className="row pt-3 justify-content-center">
                             <div className="input-group w-75">

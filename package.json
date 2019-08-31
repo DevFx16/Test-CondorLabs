@@ -5,7 +5,7 @@
   "main": "Main.js",
   "scripts": {
     "start": "node Main.js",
-    "dev": "nodemon --ignore 'Frontend/build/*' --exec 'npm run start:dev'",
+    "dev": "nodemon --ignore 'Frontend/build/*' --exec './run.sh'",
     "start:dev": "./run.sh"
   },
   "keywords": [],

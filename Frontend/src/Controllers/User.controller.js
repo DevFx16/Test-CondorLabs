@@ -3,7 +3,19 @@ import { _GetService, _LoginService, _PostService, _DeleteService } from '../Ser
 export function _Get(Skip, Token) {
     return new Promise((resolve, reject) => {
         _GetService(Skip, Token).then(Response => {
-
+            if (Response.status === 401 || Response.status === 403) {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Expired session',
+                });
+            }else if(Response.status === 200) {
+                Response.json().then(user => {
+                    resolve(user);
+                }).catch(err => {
+                    reject(err);
+                });
+            }
         }).catch(err => {
             reject(
                 {
@@ -102,6 +114,12 @@ export function _Delete(Token) {
                     resolve('Ok');
                 }).catch(err => {
                     reject(err);
+                });
+            } else if (Response.status === 401 || Response.status === 403) {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Expired session',
                 });
             } else {
                 reject({
