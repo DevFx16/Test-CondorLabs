@@ -2,6 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import ListConversations from './ListConversations';
 import Chat from './Chat';
+import ListUsers from './ListUsers';
 
 function Home() {
 
@@ -88,7 +89,7 @@ function Home() {
                         </div>
                     </nav>
                     <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-                        <Chat></Chat>
+                        <ListUsers></ListUsers>
                     </main>
                 </div>
             </div>
