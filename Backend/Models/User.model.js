@@ -9,6 +9,7 @@ const UserSchema = new schema({
     Password: { type: String, required: true },
     DisplayName: { type: String, required: true },
     UrlImage: { type: String, default: 'https://image.flaticon.com/icons/svg/660/660611.svg' },
+    Status: { type: Boolean, default: true },
     CreateAt: { type: Date, default: Date.now }
 });
 

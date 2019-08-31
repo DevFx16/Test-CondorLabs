@@ -1,5 +1,5 @@
 git add -A
-user=$(git config user.email)
+user=$(git config user.user)
 now=$(date +%m-%d-%Y)
 echo "[$user][$now]"
 read -p "Enter commit message: " message
