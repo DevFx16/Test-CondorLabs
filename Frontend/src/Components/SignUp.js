@@ -1,22 +1,47 @@
 import React, { useState } from 'react'
+import { _Post } from '../Controllers/User.controller';
+import Swal from 'sweetalert2';
 
 const SignUp = (props) => {
 
     const [Loading, setLoading] = useState(false);
 
+    //Method for create new user
     function _SignUp() {
-        setLoading(true);
+        const User = {
+            Username: document.getElementById('Username').value,
+            Password: document.getElementById('Password').value,
+            DisplayName: document.getElementById('Name').value
+        };
+        //validate form
+        if (validate(User.Username) && validate(User.Password) && validate(User.DisplayName)) {
+            setLoading(true);
+            _Post(User).then(user => {
+                console.log(user);
+                localStorage.setItem('User', JSON.stringify(user));
+                props.history.push('/Home');
+            }).catch(err => {
+                Swal();
+            }); 
+        } else {
+            document.getElementById('form').classList.add('was-validated');
+        }
+    }
+
+    //method for validate string
+    function validate(text) {
+        return text !== null && text !== '' && text.length >= 4 && text.length <= 30;
     }
 
     return (
         <div className="container h-100 animated fadeIn">
             <div className="row h-100 justify-content-center">
                 <div className="col align-self-center">
-                    <div className="row align-items-center pb-5">
+                    <div className="row align-items-center pb-1">
                         <div className="col align-self-center">
                             <picture>
                                 <source type="image/svg+xml" />
-                                <img src="https://image.flaticon.com/icons/svg/174/174240.svg" className="rounded mx-auto d-block" alt="..." width={200} height={200} />
+                                <img src="https://image.flaticon.com/icons/svg/174/174240.svg" className="rounded mx-auto d-block" alt="..." width={150} height={150} />
                             </picture>
                         </div>
                     </div>
@@ -27,18 +52,29 @@ const SignUp = (props) => {
                                     <p className="text-center font-weight-bold text-white mb-0">DevChat</p>
                                 </div>
                                 <div className="card-body border-shadow border-bottom">
-                                    <form onSubmit={_SignUp.bind(this)}>
+                                    <form onSubmit={_SignUp.bind(this)} id="form" noValidate>
                                         <div className="input-group">
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text" id="user"><i className="fa fa-user"></i></span>
                                             </div>
-                                            <input type="text" className="form-control" id="Username" placeholder="Username" aria-describedby="user"></input>
+                                            <input type="text" className="form-control" id="Username" placeholder="Username" aria-describedby="user" required minLength={4} maxLength={15}></input>
+                                            <div className="invalid-feedback">Please choose a unique and valid username.</div>
                                         </div>
                                         <div className="input-group pt-3">
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text" id="pass"><i className="fa fa-key"></i></span>
                                             </div>
-                                            <input type="text" className="form-control" id="Password" placeholder="Password" aria-describedby="pass"></input>
+                                            <input type="password" className="form-control" id="Password" placeholder="Password" aria-describedby="pass" required minLength={4} maxLength={30}></input>
+                                            <div class="invalid-feedback">
+                                                Please valid a password.
+                                            </div>
+                                        </div>
+                                        <div className="input-group pt-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text" id="pass"><i className="fa fa-user-tag"></i></span>
+                                            </div>
+                                            <input type="text" className="form-control" id="Name" placeholder="Name" aria-describedby="name" required minLength={4} maxLength={30}></input>
+                                            <div className="invalid-feedback">Invalid name.</div>
                                         </div>
                                         <div className="pt-3"></div>
                                         <div className="row justify-content-center">
@@ -68,5 +104,4 @@ const SignUp = (props) => {
         </div>
     )
 }
-
 export default SignUp
