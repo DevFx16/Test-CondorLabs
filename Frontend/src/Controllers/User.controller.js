@@ -3,7 +3,7 @@ import { _GetService, _LoginService, _PostService, _DeleteService } from '../Ser
 export function _Get(Skip, Token) {
     return new Promise((resolve, reject) => {
         _GetService(Skip, Token).then(Response => {
-            
+
         }).catch(err => {
             reject(
                 {
@@ -89,7 +89,7 @@ export function _Login(User) {
 
 export function _Delete(Token) {
     return new Promise((resolve, reject) => {
-        _PostService(User).then(Response => {
+        _Delete(Token).then(Response => {
             if (Response.status === 406) {
                 reject({
                     type: 'error',

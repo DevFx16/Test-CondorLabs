@@ -28,7 +28,12 @@ mongoose.connect(Config.Db, { useNewUrlParser: true, useCreateIndex: true, useFi
   }
   console.log('Mongoose')
 
-  app.listen(Config.Port, () => {
+  const server = app.listen(Config.Port, () => {
     console.log(`http://localhost:${Config.Port}`)
   });
+
+  //WebSocket
+  const SocketIO = require('socket.io');
+  const io = SocketIO(server);
+  require('./Backend/Controllers/Socket.controllers').SocketConfig(io);
 });
