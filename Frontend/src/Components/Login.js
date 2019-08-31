@@ -1,11 +1,54 @@
 import React, { useState } from 'react';
-
+import { _Login } from '../Controllers/User.controller';
+import Swal from 'sweetalert2';
 const Login = (props) => {
 
     const [Loading, setLoading] = useState(false);
 
-    function _Login() {
+    function _LoginSubmit() {
+        const User = {
+            Username: document.getElementById('Username').value,
+            Password: document.getElementById('Password').value,
+        };
+        //validate form
         setLoading(true);
+        if (validate(User.Username) && validate(User.Password)) {
+            _Login(User).then(response => {
+                if (response.status === 406) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'username and / or password do not match',
+                    });
+                } else if (response.status === 200) {
+                    response.json().then(user => {
+                        localStorage.setItem('User', JSON.stringify(user));
+                        props.history.push('/Home');
+                    });
+                } else {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!',
+                    });
+                }
+            }).catch(err => {
+                console.log(err);
+                Swal.fire({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            });
+        } else {
+            document.getElementById('form').classList.add('was-validated');
+        }
+        setLoading(false);
+    }
+
+    //method for validate string
+    function validate(text) {
+        return text !== null && text !== '' && text.length >= 4 && text.length <= 30;
     }
 
     return (
@@ -27,18 +70,18 @@ const Login = (props) => {
                                     <p className="text-center font-weight-bold text-white mb-0">DevChat</p>
                                 </div>
                                 <div className="card-body border-shadow border-bottom">
-                                    <form onSubmit={_Login.bind(this)}>
+                                    <form onSubmit={_LoginSubmit.bind(this)} id="form" noValidate action="javascript:;">
                                         <div className="input-group">
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text" id="user"><i className="fa fa-user"></i></span>
                                             </div>
-                                            <input type="text" className="form-control" id="Username" placeholder="Username" aria-describedby="user"></input>
+                                            <input type="text" className="form-control" id="Username" placeholder="Username" aria-describedby="user"  required minLength={4} maxLength={15}></input>
                                         </div>
                                         <div className="input-group pt-3">
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text" id="pass"><i className="fa fa-key"></i></span>
                                             </div>
-                                            <input type="text" className="form-control" id="Password" placeholder="Password" aria-describedby="pass"></input>
+                                            <input type="password" className="form-control" id="Password" placeholder="Password" aria-describedby="pass"  required minLength={4} maxLength={30}></input>
                                         </div>
                                         <div className="pt-3"></div>
                                         <div className="row justify-content-center">

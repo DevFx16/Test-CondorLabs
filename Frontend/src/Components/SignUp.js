@@ -14,18 +14,39 @@ const SignUp = (props) => {
             DisplayName: document.getElementById('Name').value
         };
         //validate form
+        setLoading(true);
         if (validate(User.Username) && validate(User.Password) && validate(User.DisplayName)) {
-            setLoading(true);
-            _Post(User).then(user => {
-                console.log(user);
-                localStorage.setItem('User', JSON.stringify(user));
-                props.history.push('/Home');
+            _Post(User).then(response => {
+                if (response.status === 406) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Username is duplicated',
+                    });
+                } else if (response.status === 200) {
+                    response.json().then(user => {
+                        localStorage.setItem('User', JSON.stringify(user));
+                        props.history.push('/Home');
+                    });
+                } else {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!',
+                    });
+                }
             }).catch(err => {
-                Swal();
-            }); 
+                console.log(err);
+                Swal.fire({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            });
         } else {
             document.getElementById('form').classList.add('was-validated');
         }
+        setLoading(false);
     }
 
     //method for validate string
@@ -52,7 +73,7 @@ const SignUp = (props) => {
                                     <p className="text-center font-weight-bold text-white mb-0">DevChat</p>
                                 </div>
                                 <div className="card-body border-shadow border-bottom">
-                                    <form onSubmit={_SignUp.bind(this)} id="form" noValidate>
+                                    <form onSubmit={_SignUp.bind(this)} id="form" noValidate action="javascript:;">
                                         <div className="input-group">
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text" id="user"><i className="fa fa-user"></i></span>

@@ -9,10 +9,7 @@ exports._Get = (Skip, Token) => {
             }
         ),
         mode: 'cors'
-    }).then(res => res.json())
-        .catch(function err(err) {
-            return err;
-        });
+    });
 }
 
 exports._Post = User => {
@@ -26,8 +23,20 @@ exports._Post = User => {
         ),
         mode: 'cors',
         body: JSON.stringify(User)
-    }).then(res => res.json())
-        .catch(function err(err) {
-            return err;
-        });
+    });
+};
+
+
+exports._Login = User => {
+    return fetch('/User/Login', {
+        method: 'POST',
+        headers: new Headers(
+            {
+                'Content-Type': 'application/json',
+                'Accept-Type': 'application/json',
+            }
+        ),
+        mode: 'cors',
+        body: JSON.stringify(User)
+    });
 };
