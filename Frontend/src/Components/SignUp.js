@@ -18,31 +18,9 @@ const SignUp = (props) => {
         setLoading(true);
         if (validate(User.Username) && validate(User.Password) && validate(User.DisplayName)) {
             _Post(User).then(response => {
-                if (response.status === 406) {
-                    Swal.fire({
-                        type: 'error',
-                        title: 'Oops...',
-                        text: 'Username is duplicated',
-                    });
-                } else if (response.status === 200) {
-                    response.json().then(user => {
-                        localStorage.setItem('User', JSON.stringify(user));
-                        props.history.push('/Home');
-                    });
-                } else {
-                    Swal.fire({
-                        type: 'error',
-                        title: 'Oops...',
-                        text: 'Something went wrong!',
-                    });
-                }
+                props.history.push('/Home');
             }).catch(err => {
-                console.log(err);
-                Swal.fire({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong!',
-                });
+                Swal.fire(err);
             });
         } else {
             document.getElementById('form').classList.add('was-validated');

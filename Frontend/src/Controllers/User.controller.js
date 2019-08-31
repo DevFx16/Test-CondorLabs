@@ -1,42 +1,123 @@
-exports._Get = (Skip, Token) => {
-    return fetch('/User/' + Skip, {
-        method: 'GET',
-        headers: new Headers(
-            {
-                'Content-Type': 'application/json',
-                'Accept-Type': 'application/json',
-                'authorization': 'Bearer ' + Token
+import { _GetService, _LoginService, _PostService, _DeleteService } from '../Services/User.service';
+
+export function _Get(Skip, Token) {
+    return new Promise((resolve, reject) => {
+        _GetService(Skip, Token).then(Response => {
+            
+        }).catch(err => {
+            reject(
+                {
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                }
+            );
+        });
+    });
+};
+
+export function _Post(User) {
+    return new Promise((resolve, reject) => {
+        _PostService(User).then(Response => {
+            if (Response.status === 406) {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Model is invlaid',
+                });
+            } else if (Response.status === 200) {
+                Response.json().then(user => {
+                    localStorage.setItem('User', JSON.stringify(user));
+                    resolve('Ok');
+                }).catch(err => {
+                    reject(err);
+                });
+            } else {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
             }
-        ),
-        mode: 'cors'
+        }).catch(err => {
+            reject(
+                {
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                }
+            );
+        });
+    });
+};
+
+
+export function _Login(User) {
+    return new Promise((resolve, reject) => {
+        _LoginService(User).then(Response => {
+            if (Response.status === 406) {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Username is duplicated',
+                });
+            } else if (Response.status === 200) {
+                Response.json().then(user => {
+                    localStorage.setItem('User', JSON.stringify(user));
+                    resolve('Ok');
+                }).catch(err => {
+                    reject(err);
+                });
+            } else {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            }
+        }).catch(err => {
+            reject(
+                {
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                }
+            );
+        });
+    });
+};
+
+export function _Delete(Token) {
+    return new Promise((resolve, reject) => {
+        _PostService(User).then(Response => {
+            if (Response.status === 406) {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Model is invlaid',
+                });
+            } else if (Response.status === 200) {
+                Response.json().then(user => {
+                    localStorage.removeItem('User');
+                    resolve('Ok');
+                }).catch(err => {
+                    reject(err);
+                });
+            } else {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            }
+        }).catch(err => {
+            reject(
+                {
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                }
+            );
+        });
     });
 }
-
-exports._Post = User => {
-    return fetch('/User', {
-        method: 'POST',
-        headers: new Headers(
-            {
-                'Content-Type': 'application/json',
-                'Accept-Type': 'application/json',
-            }
-        ),
-        mode: 'cors',
-        body: JSON.stringify(User)
-    });
-};
-
-
-exports._Login = User => {
-    return fetch('/User/Login', {
-        method: 'POST',
-        headers: new Headers(
-            {
-                'Content-Type': 'application/json',
-                'Accept-Type': 'application/json',
-            }
-        ),
-        mode: 'cors',
-        body: JSON.stringify(User)
-    });
-};

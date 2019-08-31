@@ -5,10 +5,9 @@ import Chat from './Chat';
 import ListUsers from './ListUsers';
 
 function Home() {
-
-    const { User, Token } = JSON.parse(localStorage.getItem('User'));
-
-    if (User != null) {
+    var Local = JSON.parse(localStorage.getItem('User'));
+    if (Local != null) {
+        const { User, Token } = Local;
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
                 <div className="row h-100">

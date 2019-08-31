@@ -1,6 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { _Get } from '../Controllers/User.controller';
+import Swal from 'sweetalert2';
 
 function ListUsers() {
+
+    const [Skip, setSkip] = useState(0);
+    const [Users, setUsers] = useState([]);
+    const { User, Token } = JSON.parse(localStorage.getItem('User'));
+
+    function getUsers() {
+        _Get(Skip, Token).then(response => {
+
+        }).catch(err => {
+            Swal.fire({
+                type: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong!',
+            });
+        });
+    }
+
     return (
         <div className="card bg-transparent chat">
             <div className="card-header">
@@ -44,7 +63,7 @@ function ListUsers() {
                                         </div>
                                     </div>
                                     <div className="card-body">
-                                        <img src="https://giantbomb1.cbsistatic.com/uploads/scale_small/3/33873/1700999-naruto.png" className="rounded" alt="Cinque Terre" width={200} height={200}/>
+                                        <img src="https://giantbomb1.cbsistatic.com/uploads/scale_small/3/33873/1700999-naruto.png" className="rounded" alt="Cinque Terre" width={200} height={200} />
                                     </div>
                                     <div className="card-footer">
                                         <button type="button" className="btn btn-primary w-100 gradient">
