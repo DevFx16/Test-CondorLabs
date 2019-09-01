@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import ListConversations from './ListConversations';
 import Chat from './Chat';
 import ListUsers from './ListUsers';
+import Swal from 'sweetalert2';
 
 function Home() {
     var Local = JSON.parse(localStorage.getItem('User'));
+    //variable that controls the main 
+    const [Select, setSelect] = useState(<ListUsers></ListUsers>);
     if (Local != null) {
         const { User, Token } = Local;
+
+        function _Logout() {
+            Swal.fire({
+                title: 'are you sure to leave',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, logout!'
+            }).then((result) => {
+                localStorage.clear();
+                window.location.reload();
+            });
+        }
+
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
                 <div className="row h-100">
@@ -31,13 +49,13 @@ function Home() {
                             </div>
                         </div>
                         <div className="row w-100 justify-content-between mx-0 pt-3">
-                            <button type="button" className="btn btn-link text-white" onClick={() => console.log('Hol')}>
+                            <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers></ListUsers>)}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
                             <button type="button" className="btn btn-link text-white">
                                 <i className="fas fa-user-cog fa-lg"></i>
                             </button>
-                            <button type="button" className="btn btn-link text-white">
+                            <button type="button" className="btn btn-link text-white" onClick={_Logout.bind(this)}>
                                 <i className="fas fa-sign-out-alt fa-lg"></i>
                             </button>
                         </div>
@@ -87,7 +105,7 @@ function Home() {
                         </div>
                     </nav>
                     <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-                        <ListUsers></ListUsers>
+                        {Select}
                     </main>
                 </div>
             </div>
