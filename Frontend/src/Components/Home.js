@@ -1,20 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import ListConversations from './ListConversations';
 import Chat from './Chat';
 import ListUsers from './ListUsers';
 import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import Socket from '../Controllers/Socket.controller';
 import { _Put } from '../Controllers/User.controller';
+import GroupsController from '../Controllers/Group.controller';
+import AddGroup from './AddGroup';
 
 function Home() {
     var Local = JSON.parse(localStorage.getItem('User'));
     //variable that controls the main 
     const [Select, setSelect] = useState(<ListUsers></ListUsers>);
+    const [Groups, setGroups] = useState([]);
+    const [Init, setInit] = useState(true);
+    useEffect(() => {
+        if (Init && Local != null) _get();
+    });
+
+    //get chats
+    function _get() {
+        GroupsController._Get(Local.Token).then(groups => {
+            if (groups) {
+                setGroups(groups);
+            }
+        });
+    }
+
     if (Local != null) {
         const { User, Token } = Local;
         Socket();
+        const MySwal = withReactContent(Swal);
 
+        //logout
         function _Logout() {
             Swal.fire({
                 title: 'are you sure to leave',
@@ -86,22 +106,31 @@ function Home() {
                                     </div>
                                     <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                                         <div className="card-body px-0 pt-0 pb-0">
-                                            <ListConversations></ListConversations>
+                                            <ListConversations Conversations={[]}></ListConversations>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="card bg-transparent">
                                     <div className="card-header" id="headingTwo">
                                         <h2 className="mb-0">
-                                            <button className="btn text-white w-100" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" id="collapse">
-                                                <h6 className="text-center font-weight-bold text-white float-left">Groups</h6>
-                                                <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
-                                            </button>
+                                            <div className="row w-100 mx-0 justify-content-between">
+                                                <button className="btn text-white w-75" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" id="collapse">
+                                                    <h6 className="text-center font-weight-bold text-white float-left">Groups</h6>
+                                                    <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
+                                                </button>
+                                                <button className="btn text-white w-25" type="button" onClick={() => MySwal.fire({
+                                                    showCloseButton: false,
+                                                    showConfirmButton: false,
+                                                    html: <AddGroup Close={() => MySwal.close()}></AddGroup>
+                                                })}>
+                                                    <span className="float-right"><i className="fas fa-plus-circle text-white"></i></span>
+                                                </button>
+                                            </div>
                                         </h2>
                                     </div>
                                     <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                                         <div className="card-body px-0 pt-0 pb-0">
-                                            <ListConversations></ListConversations>
+                                            <ListConversations Conversations={Groups}></ListConversations>
                                         </div>
                                     </div>
                                 </div>
