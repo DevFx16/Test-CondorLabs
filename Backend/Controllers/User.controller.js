@@ -2,11 +2,12 @@ const { User } = require('../Models/User.model');
 const { CreateToken } = require('../Services/Auth.service');
 
 exports._Get = (req, res) => {
-    User.find().skip(parseInt(req.params.Skip)).limit(50).where('_id').ne(req.headers._id).then((user) => {
-        return res.status(200).send(user);
-    }).catch((err) => {
-        return res.status(406).send(err);
-    });
+    User.find().select('-Password')
+        .skip(parseInt(req.params.Skip)).limit(50).where('_id').ne(req.headers._id).then((user) => {
+            return res.status(200).send(user);
+        }).catch((err) => {
+            return res.status(406).send(err);
+        });
 }
 
 exports._GetId = (req, res) => {
@@ -15,6 +16,15 @@ exports._GetId = (req, res) => {
     }).catch(err => {
         return res.status(406).send(err);
     });
+}
+
+exports._GetName = (req, res) => {
+    User.find({ 'DisplayName': { '$regex': new RegExp(req.params.Name.toUpperCase()) } },).skip(parseInt(req.params.Skip)).select('-Password')
+        .where('_id').ne(req.headers._id).limit(50).then(user => {
+            return res.status(200).send(user);
+        }).catch(err => {
+            return res.status(406).send(err);
+        });
 }
 
 exports._Post = (req, res) => {

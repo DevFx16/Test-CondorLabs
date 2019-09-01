@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { _Get } from '../Controllers/User.controller';
+import { _Get, _GetName } from '../Controllers/User.controller';
 import Swal from 'sweetalert2';
 
 function ListUsers() {
 
     const [Skip, setSkip] = useState(0);
+    const [SkipSearch, setSkipSearch] = useState(0);
     const [Users, setUsers] = useState([]);
     const [Backup, setBackup] = useState([])
     const { User, Token } = JSON.parse(localStorage.getItem('User'));
@@ -33,15 +34,28 @@ function ListUsers() {
         });
     }
 
-    //search users
-    function Search(text) {
+    //search user
+    function Search() {
+        var name = document.getElementById('search').value;
+        if(name !== null && name !== ''){
+            _GetName(SkipSearch, Token, name).then(response => {
+                if (response !== null) {
+                    console.log(response);
+                    setUsers(response);
+                }
+            }).catch(err => {
+                Swal.fire({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            });
+        }
+    }
+    //onChangeInput
+    function onChange(text) {
         if (text.target.value === '' || text.target.value === null) {
-            console.log(text.target.value)
             setUsers(Backup);
-        } else {
-            setUsers(Backup.filter(item => {
-                return item.DisplayName.toUpperCase().match(text.target.value.toUpperCase());
-            }));
         }
     }
 
@@ -54,11 +68,11 @@ function ListUsers() {
                     </div>
                     <div className="col">
                         <div className="input-group w-100">
-                            <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Search user for name" onChange={Search.bind(this)} />
+                            <input className="form-control py-2 border-right-0 border bg-transparent text-white" id="search" type="search" placeholder="Search user for name" onChange={onChange.bind(this)} />
                             <span className="input-group-append">
-                                <div className="btn btn-link border-left-0 border text-white">
+                                <button className="btn btn-link border-left-0 border text-white" onClick={Search.bind(this)}>
                                     <i className="fa fa-search"></i>
-                                </div>
+                                </button>
                             </span>
                         </div>
                     </div>

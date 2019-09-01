@@ -12,7 +12,7 @@ const SignUp = (props) => {
         const User = {
             Username: document.getElementById('Username').value,
             Password: document.getElementById('Password').value,
-            DisplayName: document.getElementById('Name').value
+            DisplayName: document.getElementById('Name').value.toUpperCase()
         };
         //validate form
         setLoading(true);
