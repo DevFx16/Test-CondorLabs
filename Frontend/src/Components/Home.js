@@ -4,6 +4,8 @@ import ListConversations from './ListConversations';
 import Chat from './Chat';
 import ListUsers from './ListUsers';
 import Swal from 'sweetalert2';
+import Socket from '../Controllers/Socket.controller';
+import { _Put } from '../Controllers/User.controller';
 
 function Home() {
     var Local = JSON.parse(localStorage.getItem('User'));
@@ -11,6 +13,7 @@ function Home() {
     const [Select, setSelect] = useState(<ListUsers></ListUsers>);
     if (Local != null) {
         const { User, Token } = Local;
+        Socket();
 
         function _Logout() {
             Swal.fire({
@@ -22,6 +25,7 @@ function Home() {
                 confirmButtonText: 'Yes, logout!'
             }).then((result) => {
                 localStorage.clear();
+                _Put(Token, { Status: false });
                 window.location.reload();
             });
         }

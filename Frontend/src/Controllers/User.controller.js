@@ -1,4 +1,4 @@
-import { _GetService, _LoginService, _PostService, _DeleteService, _GetNameService } from '../Services/User.service';
+import { _GetService, _LoginService, _PostService, _DeleteService, _GetNameService, _PutService } from '../Services/User.service';
 
 export function _Get(Skip, Token) {
     return new Promise((resolve, reject) => {
@@ -9,7 +9,7 @@ export function _Get(Skip, Token) {
                     title: 'Oops...',
                     text: 'Expired session',
                 });
-            }else if(Response.status === 200) {
+            } else if (Response.status === 200) {
                 Response.json().then(user => {
                     resolve(user);
                 }).catch(err => {
@@ -37,15 +37,14 @@ export function _GetName(Skip, Token, Name) {
                     title: 'Oops...',
                     text: 'Expired session',
                 });
-            }else if(Response.status === 200) {
+            } else if (Response.status === 200) {
                 Response.json().then(user => {
                     resolve(user);
                 }).catch(err => {
                     reject(err);
                 });
-            }else{
-                console.log(Response);
-                reject( {
+            } else {
+                reject({
                     type: 'error',
                     title: 'Oops...',
                     text: 'Something went wrong!',
@@ -97,7 +96,6 @@ export function _Post(User) {
         });
     });
 };
-
 
 export function _Login(User) {
     return new Promise((resolve, reject) => {
@@ -155,6 +153,43 @@ export function _Delete(Token) {
                     type: 'error',
                     title: 'Oops...',
                     text: 'Expired session',
+                });
+            } else {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            }
+        }).catch(err => {
+            reject(
+                {
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                }
+            );
+        });
+    });
+}
+
+export function _Put(Token, User) {
+    return new Promise((resolve, reject) => {
+        _PutService(User, Token).then(Response => {
+            if (Response.status === 406) {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Model is invlaid',
+                });
+            } else if (Response.status === 200) {
+                Response.json().then(user => {
+                    if (user) {
+                        localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
+                    }
+                    resolve('Ok');
+                }).catch(err => {
+                    reject(err);
                 });
             } else {
                 reject({

@@ -40,6 +40,21 @@ export function _PostService(User) {
     });
 };
 
+export function _PutService(User, Token) {
+    return fetch('/User', {
+        method: 'PUT',
+        headers: new Headers(
+            {
+                'Content-Type': 'application/json',
+                'Accept-Type': 'application/json',
+                'authorization': 'Bearer ' + Token
+            }
+        ),
+        mode: 'cors',
+        body: JSON.stringify(User)
+    });
+};
+
 
 export function _LoginService(User) {
     return fetch('/User/Login', {

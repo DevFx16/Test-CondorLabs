@@ -1,6 +1,6 @@
 exports.SocketConfig = Io => {
 
-    Io.on('connection', (socket) => {
+    Io.on('connect', (socket) => {
 
     });
 

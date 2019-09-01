@@ -96,7 +96,7 @@ function ListUsers() {
                                                     <span>
                                                         <i className="fas fa-meteor" style={{ color: item.Status ? 'green' : 'red' }}></i>
                                                     </span>
-                                                    <h6 className="text-center text-white">{item.Status ? 'Online' : 'Disconnected'}</h6>
+                                                    <h6 className="text-center ml-1 text-white">{item.Status ? 'Online' : 'Disconnected'}</h6>
                                                 </div>
                                             </div>
                                         </div>
