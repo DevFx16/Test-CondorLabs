@@ -21,6 +21,8 @@ app.get('/', function (req, res) {
 });
 
 require('./Backend/Routes/User.routes').UserRoutes(app);
+require('./Backend/Routes/Group.routes').GroupRoutes(app);
+require('./Backend/Routes/Conversation.routes').ConversationRoutes(app);
 
 mongoose.connect(Config.Db, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, (err, res) => {
   if (err) {

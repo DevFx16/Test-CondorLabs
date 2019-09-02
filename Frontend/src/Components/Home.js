@@ -8,13 +8,34 @@ import withReactContent from 'sweetalert2-react-content';
 import Socket from '../Controllers/Socket.controller';
 import { _Put } from '../Controllers/User.controller';
 import GroupsController from '../Controllers/Group.controller';
+import ConversationController from '../Controllers/Conversation.controller';
 import AddGroup from './AddGroup';
 
 function Home() {
     var Local = JSON.parse(localStorage.getItem('User'));
+
+    //Change to chat
+    function ChangeChat(id) {
+        ConversationController._GetOne(Local.Token, id).then(conversation => {
+            if (conversation !== null && conversation.length >= 1) {
+                setSelect(<Chat Conversation={conversation}></Chat>);
+            } else {
+                ConversationController._Post({ Members: [Local.User._id, id] }, Local.Token).then(conversation => {
+                    setSelect(<Chat Conversation={conversation}></Chat>);
+                    setInit(true);
+                }).catch(err => {
+                    Swal.fire(err);
+                });
+            }
+        }).catch(err => {
+            Swal.fire(err);
+        });
+    }
+
     //variable that controls the main 
-    const [Select, setSelect] = useState(<ListUsers></ListUsers>);
+    const [Select, setSelect] = useState(<ListUsers Change={ChangeChat}></ListUsers>);
     const [Groups, setGroups] = useState([]);
+    const [Conversations, setConversations] = useState([]);
     const [Init, setInit] = useState(true);
     useEffect(() => {
         if (Init && Local != null) _get();
@@ -27,6 +48,12 @@ function Home() {
                 setGroups(groups);
             }
         });
+        ConversationController._Get(Local.Token).then(conversations => {
+            if (conversations) {
+                setConversations(conversations);
+            }
+        });
+        setInit(false);
     }
 
     if (Local != null) {
@@ -56,7 +83,7 @@ function Home() {
                     <nav className="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar gradient ">
                         <div className="row pt-3 justify-content-center">
                             <div className="col-5">
-                                <img src="https://image.flaticon.com/icons/svg/660/660611.svg" className="rounded-circle float-right" alt="Cinque Terre" />
+                                <img src={User.UrlImage} className="rounded-circle float-right" alt="Cinque Terre" />
                             </div>
                             <div className="col">
                                 <div className="row">
@@ -73,7 +100,7 @@ function Home() {
                             </div>
                         </div>
                         <div className="row w-100 justify-content-between mx-0 pt-3">
-                            <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers></ListUsers>)}>
+                            <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers Change={ChangeChat}></ListUsers>)}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
                             <button type="button" className="btn btn-link text-white">
@@ -106,7 +133,7 @@ function Home() {
                                     </div>
                                     <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                                         <div className="card-body px-0 pt-0 pb-0">
-                                            <ListConversations Conversations={[]}></ListConversations>
+                                            <ListConversations Conversations={Conversations}></ListConversations>
                                         </div>
                                     </div>
                                 </div>

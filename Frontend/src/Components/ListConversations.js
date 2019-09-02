@@ -1,14 +1,22 @@
 import React from 'react';
 
 export default function ListMessges(props) {
+
+    const { User, Token } = JSON.parse(localStorage.getItem('User'));
     return (
         <ul className="list-group w-100 bg-transparent">
             {
-                props.Conversations.map((item, index) =>
-                    <li className="list-group-item bg-transparent d-flex justify-content-around align-items-start" key={index}>
-                        <img src="https://image.flaticon.com/icons/svg/660/660611.svg" className="rounded-circle float-left" alt="Cinque Terre" width={30} height={30} />
-                        <h6 className="text-center font-weight-bold text-white mb-0">KillGamer</h6>
-                    </li>
+                props.Conversations.map((item, index) => {
+                    var member = item.Members.filter(function (item) {
+                        return item._id !== User._id;
+                    });
+                    return (
+                        <li className="list-group-item bg-transparent d-flex justify-content-around align-items-center" key={index}>
+                            <img src={member[0].UrlImage} className="rounded-circle float-left" alt="Cinque Terre" width={30} height={30} />
+                            <h6 className="text-center font-weight-bold text-white mb-0">{member[0].DisplayName}</h6>
+                        </li>
+                    )
+                }
                 )
             }
         </ul>
