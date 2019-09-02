@@ -5,11 +5,25 @@ import Chat from './Chat';
 import ListUsers from './ListUsers';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import Socket from '../Controllers/Socket.controller';
 import { _Put } from '../Controllers/User.controller';
 import GroupsController from '../Controllers/Group.controller';
 import ConversationController from '../Controllers/Conversation.controller';
 import AddGroup from './AddGroup';
+import Io from 'socket.io-client';
+
+const Socket = Io();
+const _user = JSON.parse(localStorage.getItem('User'));
+if (_user !== null) {
+    const { User, Token } = _user;
+    Socket.on('connect', () => {
+        console.log('Hola')
+        _Put(Token, { Status: true });
+        window.onbeforeunload = function () {
+            _Put(Token, { Status: false });
+        };
+    });
+}
+
 
 function Home() {
     var Local = JSON.parse(localStorage.getItem('User'));
@@ -17,11 +31,11 @@ function Home() {
     //Change to chat
     function ChangeChat(id) {
         ConversationController._GetOne(Local.Token, id).then(conversation => {
-            if (conversation !== null && conversation.length >= 1) {
-                setSelect(<Chat Conversation={conversation}></Chat>);
+            if (conversation !== null && JSON.stringify({}) !== JSON.stringify(conversation)) {
+                setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
             } else {
                 ConversationController._Post({ Members: [Local.User._id, id] }, Local.Token).then(conversation => {
-                    setSelect(<Chat Conversation={conversation}></Chat>);
+                    setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
                     setInit(true);
                 }).catch(err => {
                     Swal.fire(err);
@@ -50,6 +64,10 @@ function Home() {
         });
         ConversationController._Get(Local.Token).then(conversations => {
             if (conversations) {
+                conversations.map((item, index) => {
+                    Socket.emit('Room:Leave', item._id);
+                    Socket.emit('Room:Join', item._id);
+                });
                 setConversations(conversations);
             }
         });
@@ -58,7 +76,6 @@ function Home() {
 
     if (Local != null) {
         const { User, Token } = Local;
-        Socket();
         const MySwal = withReactContent(Swal);
 
         //logout

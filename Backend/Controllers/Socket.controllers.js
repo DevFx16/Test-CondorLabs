@@ -1,18 +1,21 @@
-exports.SocketConfig = Io => {
-
+exports.SocketConfig = server => {
+  const SocketIO = require('socket.io');
+  const Io = SocketIO(server);
     Io.on('connect', (socket) => {
+        socket.on('Room:Join', room => {
+            socket.join(room);
+        });
 
-    });
+        socket.on('Room:Leave', room => {
+            socket.leave(room);
+        });
 
-    Io.on('Chat:Message', (data) => {
-
-    });
-
-    Io.on('Chat:Typing', (data) => {
-
-    });
-
-    Io.on('disconnect', (data) => {
-
+        socket.on('Chat:Message', (data) => {
+            socket.broadcast.to(data.Room).emit('Chat:Message', data);
+        });
+    
+        socket.on('Chat:Typing', (data) => {
+            socket.broadcast.to(data.Room).emit('Chat:Message', data);
+        });
     });
 }

@@ -1,4 +1,4 @@
-sudo ln -s $HOME/Projects/Test-CondorLabs/node_modules $HOME/Projects/Test-CondorLabs/Frontend/node_modules
+sudo ln -s $HOME/Projects/Test-CondorLabs/node_modules $HOME/Projects/Test-CondorLabs/Frontend
 cd Frontend/
 rm -rf build
 npm run build

@@ -1,4 +1,4 @@
-import { _GetService, _GetOneService, _PostService } from '../Services/Conversation.service';
+import { _GetService, _GetOneService, _PostService, _PutService } from '../Services/Conversation.service';
 
 export function _Get(Token) {
     return new Promise((resolve, reject) => {
@@ -84,6 +84,33 @@ export function _Post(Conversation, Token) {
     });
 }
 
+export function _Put(Message, Token, Id) {
+    return new Promise((resolve, reject) => {
+        _PutService(Message, Id, Token).then(Response => {
+            if (Response.status === 401 || Response.status === 403) {
+                reject({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Expired session',
+                });
+            } else if (Response.status === 200) {
+                Response.json().then(message => {
+                    resolve(message);
+                }).catch(err => {
+                    reject(err);
+                });
+            }
+        }).catch(err => {
+            reject(
+                {
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong in conversations!',
+                }
+            );
+        });
+    });
+}
 
 export default {
     _Get,

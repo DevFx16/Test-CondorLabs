@@ -41,8 +41,8 @@ export function _PostService(Conversation, Token) {
     });
 };
 
-export function _PutService(User, Token) {
-    return fetch('/User', {
+export function _PutService(Message, Id, Token) {
+    return fetch('/Conversation/' + Id, {
         method: 'PUT',
         headers: new Headers(
             {
@@ -52,7 +52,7 @@ export function _PutService(User, Token) {
             }
         ),
         mode: 'cors',
-        body: JSON.stringify(User)
+        body: JSON.stringify(Message)
     });
 };
 

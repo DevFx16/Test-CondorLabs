@@ -29,6 +29,14 @@ exports._Post = (req, res) => {
     });
 }
 
+exports._Put = (req, res) => {
+    Conversation.findByIdAndUpdate(req.params.Id, { '$push': { 'Messages': req.body } }, { new: true }).then(conversation => {
+        return res.status(200).send(conversation);
+    }).catch(err => {
+        return res.status(406).send(err);
+    });
+}
+
 exports._Delete = (req, res) => {
     Conversation.findOneAndDelete(req.params.Id).then(conversation => {
         return res.status(200).send(conversation);
