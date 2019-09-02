@@ -9,14 +9,16 @@ function Chat(props) {
     });
     const IndexUser = props.Conversation.Members.findIndex(item => item._id === User._id);
     const [Messages, setMessages] = useState(props.Conversation.Messages);
-
     useEffect(() => {
         setMessages(props.Conversation.Messages);
+    }, [props.Conversation._id]);
+
+    useEffect(() => {
+        document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
     });
 
     props.Socket.on('Chat:Message', (data) => {
-        props.Conversation.Messages = props.Conversation.Messages.concat([data.Message]);
-        setMessages(props.Conversation.Messages);
+        setMessages(Messages.concat([data.Message]));
     });
 
     function PushMessage() {
@@ -24,7 +26,7 @@ function Chat(props) {
         if (text !== null && text !== '') {
             _Put({
                 'Message': text,
-                'IndexUser': props.Conversation.Members.findIndex(item => item._id === User._id)
+                'IndexUser': IndexUser
             }, Token, props.Conversation._id).then(message => {
                 props.Socket.emit('Chat:Message', {
                     Room: props.Conversation._id,
@@ -47,7 +49,7 @@ function Chat(props) {
                     </div>
                 </div>
             </div>
-            <div className="card-body border-shadow overflow-auto">
+            <div className="card-body border-shadow overflow-auto" id="scroll">
                 {
                     Messages.map((item, index) => <Message Image={props.Conversation.Members[item.IndexUser].UrlImage} Username={props.Conversation.Members[item.IndexUser].Username} Message={item.Message}></Message>)
                 }
