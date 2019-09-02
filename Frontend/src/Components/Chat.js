@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Message from './Message';
 import { _Put } from '../Controllers/Conversation.controller';
 
@@ -8,12 +8,15 @@ function Chat(props) {
         return item._id !== User._id;
     });
     const IndexUser = props.Conversation.Members.findIndex(item => item._id === User._id);
-    console.log(IndexUser);
-    const [Messages, setMessages] = useState(props.Conversation.Messages)
+    const [Messages, setMessages] = useState(props.Conversation.Messages);
+
+    useEffect(() => {
+        setMessages(props.Conversation.Messages);
+    });
 
     props.Socket.on('Chat:Message', (data) => {
-        setMessages(Messages.concat([data.Message]));
-        console.log(data);
+        props.Conversation.Messages = props.Conversation.Messages.concat([data.Message]);
+        setMessages(props.Conversation.Messages);
     });
 
     function PushMessage() {

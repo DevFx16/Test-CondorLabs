@@ -150,7 +150,7 @@ function Home() {
                                     </div>
                                     <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                                         <div className="card-body px-0 pt-0 pb-0">
-                                            <ListConversations Conversations={Conversations}></ListConversations>
+                                            <ListConversations Conversations={Conversations} Change={ChangeChat}></ListConversations>
                                         </div>
                                     </div>
                                 </div>
@@ -174,7 +174,7 @@ function Home() {
                                     </div>
                                     <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                                         <div className="card-body px-0 pt-0 pb-0">
-                                            <ListConversations Conversations={Groups}></ListConversations>
+                                            <ListConversations Conversations={Groups} Change={ChangeChat}></ListConversations>
                                         </div>
                                     </div>
                                 </div>
