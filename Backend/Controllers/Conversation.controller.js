@@ -18,6 +18,14 @@ exports._GetOne = (req, res) => {
         });
 }
 
+exports._GetOneRoom = (req, res) => {
+    Conversation.findOne(req.params.Room).where('Members').in([req.headers._id])
+        .populate({ path: 'Members', select: '-Password' }).then(conversation => {
+            return res.status(200).send(conversation !== null ? conversation : {});
+        }).catch(err => {
+            return res.status(406).send(err);
+        });
+}
 
 exports._Post = (req, res) => {
     new Conversation(req.body).save().then(conversation => {

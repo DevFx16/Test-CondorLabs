@@ -48,8 +48,8 @@ function Home() {
     //variable that controls the main 
     const [Select, setSelect] = useState(<ListUsers Change={ChangeChat}></ListUsers>);
     const [Groups, setGroups] = useState([]);
-    const [Conversations, setConversations] = useState([]);
     const [Init, setInit] = useState(true);
+    const [Conversations, setConversations] = useState([]);
     useEffect(() => {
         if (Init && Local != null) _get();
     });
@@ -72,6 +72,11 @@ function Home() {
     if (Local != null) {
         const { User, Token } = Local;
         const MySwal = withReactContent(Swal);
+        Socket.on('Chat:Room', room => {
+            if(Conversations.filter(item => item._id !== room).length >= 1){
+                
+            }
+        });
 
         //logout
         function _Logout() {

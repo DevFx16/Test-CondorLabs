@@ -2,19 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import Message from './Message';
 import { _Put } from '../Controllers/Conversation.controller';
 
-function Chat(props) {
+function Chat({ Conversation, Socket }) {
     const { User, Token } = JSON.parse(localStorage.getItem('User'));
-    const { Conversation, Socket } = props;
     var prevProps = usePrevious({ Conversation, Socket });
     const Member = Conversation.Members.filter(function (item) {
         return item._id !== User._id;
     });
     const IndexUser = Conversation.Members.findIndex(item => item._id === User._id);
     const [Messages, setMessages] = useState(Conversation.Messages);
-    Socket.emit('Room:Join', Conversation._id);
+    Socket.on('Chat:Message', (data) => {
+        if (data.Room === Conversation._id)
+            setMessages(Messages.concat([data.Message]));
+    });
+
     useEffect(() => {
         setMessages(Conversation.Messages);
         if (prevProps !== undefined) Socket.emit('Room:Leave', prevProps.Conversation._id);
+        Socket.emit('Room:Join', Conversation._id);
     }, [Conversation._id]);
 
     useEffect(() => {
@@ -28,11 +32,6 @@ function Chat(props) {
         });
         return ref.current;
     }
-
-    Socket.on('Chat:Message', (data) => {
-        if (prevProps._id === Conversation._id)
-            setMessages(Messages.concat([data.Message]));
-    });
 
     function PushMessage() {
         const text = document.getElementById('Message').value;
@@ -63,14 +62,14 @@ function Chat(props) {
                     </div>
                 </div>
             </div>
-            <div className="card-body border-shadow bg-dark overflow-auto" id="scroll">
+            <div className="card-body border-shadow overflow-auto" id="scroll">
                 {
                     Messages.map((item, index) => <Message Image={Conversation.Members[item.IndexUser].UrlImage} Username={Conversation.Members[item.IndexUser].Username} Message={item.Message}></Message>)
                 }
             </div>
             <div className="card-footer">
                 <div className="input-group">
-                    <textarea name="" className="form-control type_msg" placeholder="Type your message..." id="Message"></textarea>
+                    <textarea name="" className="form-control type_msg" placeholder="Type your message..." id="Message" style={{ resize: 'none' }}></textarea>
                     <div className="input-group-append">
                         <button className="input-group-text send_btn" onClick={PushMessage.bind(this)}><i className="fas fa-location-arrow"></i></button>
                     </div>
