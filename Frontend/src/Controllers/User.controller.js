@@ -104,7 +104,7 @@ export function _Login(User) {
                 reject({
                     type: 'error',
                     title: 'Oops...',
-                    text: 'Username is duplicated',
+                    text: 'Username or password is invalid',
                 });
             } else if (Response.status === 200) {
                 Response.json().then(user => {

@@ -11,9 +11,9 @@ export default function ListMessges(props) {
                         return item._id !== User._id;
                     });
                     return (
-                        <button className="list-group-item bg-transparent d-flex justify-content-around align-items-center" key={index} onClick={() => props.Change(member[0]._id)}>
+                        <button className="list-group-item bg-transparent d-flex justify-content-start align-items-center" key={index} onClick={() => props.Change(member[0]._id)}>
                             <img src={member[0].UrlImage} className="rounded-circle float-left" alt="Cinque Terre" width={30} height={30} />
-                            <h6 className="text-center font-weight-bold text-white mb-0">{member[0].DisplayName}</h6>
+                            <h6 className="text-center font-weight-bold text-white mb-0 ml-1">{member[0].DisplayName}</h6>
                         </button>
                     )
                 })

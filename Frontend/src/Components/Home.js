@@ -16,7 +16,6 @@ const _user = JSON.parse(localStorage.getItem('User'));
 if (_user !== null) {
     const { User, Token } = _user;
     Socket.on('connect', () => {
-        console.log('Hola')
         _Put(Token, { Status: true });
         window.onbeforeunload = function () {
             _Put(Token, { Status: false });
@@ -64,10 +63,6 @@ function Home() {
         });
         ConversationController._Get(Local.Token).then(conversations => {
             if (conversations) {
-                conversations.map((item, index) => {
-                    Socket.emit('Room:Leave', item._id);
-                    Socket.emit('Room:Join', item._id);
-                });
                 setConversations(conversations);
             }
         });
