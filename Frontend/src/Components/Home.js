@@ -3,8 +3,7 @@ import { Redirect } from 'react-router-dom';
 import ListConversations from './ListConversations';
 import Chat from './Chat';
 import ListUsers from './ListUsers';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import izitoast from 'izitoast';
 import { _Put } from '../Controllers/User.controller';
 import GroupsController from '../Controllers/Group.controller';
 import ConversationController from '../Controllers/Conversation.controller';
@@ -37,11 +36,11 @@ function Home() {
                     setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
                     setInit(true);
                 }).catch(err => {
-                    Swal.fire(err);
+                    izitoast.error(err);
                 });
             }
         }).catch(err => {
-            Swal.fire(err);
+            izitoast.error(err);
         });
     }
 
@@ -71,29 +70,38 @@ function Home() {
 
     if (Local != null) {
         const { User, Token } = Local;
-        const MySwal = withReactContent(Swal);
         Socket.on('Chat:Room', room => {
-            if(Conversations.filter(item => item._id !== room).length >= 1){
-                
+            if (Conversations.filter(item => item._id !== room).length >= 1) {
+
             }
         });
 
         //logout
         function _Logout() {
-            Swal.fire({
-                title: 'are you sure to leave',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, logout!'
-            }).then((result) => {
-                localStorage.clear();
-                _Put(Token, { Status: false });
-                window.location.reload();
+            izitoast.question({
+                timeout: 20000,
+                close: false,
+                overlay: true,
+                displayMode: 'once',
+                id: 'question',
+                zindex: 999,
+                title: 'Hey',
+                message: 'are you sure to leave?',
+                position: 'center',
+                buttons: [
+                    ['<button><b>YES</b></button>', function (instance, toast) {
+                        instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                        _Put(Token, { Status: false }).then(user => {
+                            localStorage.clear();
+                            window.location.reload();
+                        }).catch(err => {
+                            izitoast.error(err);
+                        });             
+                    }, true],
+                    ['<button>NO</button>', function (instance, toast) {instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');}],
+                ],
             });
         }
-
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
                 <div className="row h-100">
@@ -162,11 +170,7 @@ function Home() {
                                                     <h6 className="text-center font-weight-bold text-white float-left">Groups</h6>
                                                     <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
                                                 </button>
-                                                <button className="btn text-white w-25" type="button" onClick={() => MySwal.fire({
-                                                    showCloseButton: false,
-                                                    showConfirmButton: false,
-                                                    html: <AddGroup Close={() => MySwal.close()}></AddGroup>
-                                                })}>
+                                                <button className="btn text-white w-25" type="button" data-toggle="modal" data-target="#Modal">
                                                     <span className="float-right"><i className="fas fa-plus-circle text-white"></i></span>
                                                 </button>
                                             </div>
@@ -181,6 +185,21 @@ function Home() {
                             </div>
                         </div>
                     </nav>
+                    <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="Modal" aria-hidden="true" data-backdrop="false">>
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Add Group</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <AddGroup></AddGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
                         {Select}
                     </main>

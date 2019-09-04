@@ -6,9 +6,6 @@ const AddGroup = () => {
 
     return (
         <div className="card gradient">
-            <div className="card-header text-white text-center">
-                <h6 className="text-center font-weight-bold text-white float-left">Add Group</h6>
-            </div>
             <div className="card-body">
                 <div className="row">
                     <div className="col">

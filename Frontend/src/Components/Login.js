@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { _Login } from '../Controllers/User.controller';
-import Swal from 'sweetalert2';
 import { Redirect } from 'react-router-dom';
+import izitoast from 'izitoast';
 
 const Login = (props) => {
 
@@ -16,9 +16,10 @@ const Login = (props) => {
         setLoading(true);
         if (validate(User.Username) && validate(User.Password)) {
             _Login(User).then(response => {
+                localStorage.setItem('User', JSON.stringify(response));
                 props.history.push('/Home');
             }).catch(err => {
-                Swal.fire(err);
+                izitoast.error(err);
             });
         } else {
             document.getElementById('form').classList.add('was-validated');

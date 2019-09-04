@@ -1,29 +1,16 @@
 import { _GetService, _GetOneService, _PostService, _PutService } from '../Services/Conversation.service';
+import { ResponseUtil, customError } from '../Utils/Controllers.util';
 
 export function _Get(Token) {
     return new Promise((resolve, reject) => {
         _GetService(Token).then(Response => {
-            if (Response.status === 401 || Response.status === 403) {
-                reject({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Expired session',
-                });
-            } else if (Response.status === 200) {
-                Response.json().then(conversations => {
-                    resolve(conversations);
-                }).catch(err => {
-                    reject(err);
-                });
-            }
+            ResponseUtil(Response).then(user => {
+                resolve(user);
+            }).catch(err => {
+                reject(err);
+            });
         }).catch(err => {
-            reject(
-                {
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong in conversations!',
-                }
-            );
+            reject(customError);
         });
     });
 }
@@ -31,27 +18,13 @@ export function _Get(Token) {
 export function _GetOne(Token, Id) {
     return new Promise((resolve, reject) => {
         _GetOneService(Token, Id).then(Response => {
-            if (Response.status === 401 || Response.status === 403) {
-                reject({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Expired session',
-                });
-            } else if (Response.status === 200) {
-                Response.json().then(conversation => {
-                    resolve(conversation);
-                }).catch(err => {
-                    reject(err);
-                });
-            }
+            ResponseUtil(Response).then(user => {
+                resolve(user);
+            }).catch(err => {
+                reject(err);
+            });
         }).catch(err => {
-            reject(
-                {
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong in conversations!',
-                }
-            );
+            reject(customError);
         });
     });
 }
@@ -59,27 +32,13 @@ export function _GetOne(Token, Id) {
 export function _Post(Conversation, Token) {
     return new Promise((resolve, reject) => {
         _PostService(Conversation, Token).then(Response => {
-            if (Response.status === 401 || Response.status === 403) {
-                reject({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Expired session',
-                });
-            } else if (Response.status === 200) {
-                Response.json().then(conversation => {
-                    resolve(conversation);
-                }).catch(err => {
-                    reject(err);
-                });
-            }
+            ResponseUtil(Response).then(user => {
+                resolve(user);
+            }).catch(err => {
+                reject(err);
+            });
         }).catch(err => {
-            reject(
-                {
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong in conversations!',
-                }
-            );
+            reject(customError);
         });
     });
 }
@@ -87,27 +46,13 @@ export function _Post(Conversation, Token) {
 export function _Put(Message, Token, Id) {
     return new Promise((resolve, reject) => {
         _PutService(Message, Id, Token).then(Response => {
-            if (Response.status === 401 || Response.status === 403) {
-                reject({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Expired session',
-                });
-            } else if (Response.status === 200) {
-                Response.json().then(message => {
-                    resolve(message);
-                }).catch(err => {
-                    reject(err);
-                });
-            }
+            ResponseUtil(Response).then(user => {
+                resolve(user);
+            }).catch(err => {
+                reject(err);
+            });
         }).catch(err => {
-            reject(
-                {
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong in conversations!',
-                }
-            );
+            reject(err);
         });
     });
 }

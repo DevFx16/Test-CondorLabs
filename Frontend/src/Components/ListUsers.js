@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { _Get, _GetName } from '../Controllers/User.controller';
-import Swal from 'sweetalert2';
+import izitoast from 'izitoast';
 
 function ListUsers(props) {
 
@@ -26,11 +26,7 @@ function ListUsers(props) {
                 setSkip(Skip + 50);
             }
         }).catch(err => {
-            Swal.fire({
-                type: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong!',
-            });
+            izitoast.error(err);
         });
     }
 
@@ -44,11 +40,7 @@ function ListUsers(props) {
                     setUsers(response);
                 }
             }).catch(err => {
-                Swal.fire({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong!',
-                });
+                izitoast.error(err);
             });
         }
     }

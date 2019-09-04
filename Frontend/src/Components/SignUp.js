@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { _Post } from '../Controllers/User.controller';
-import Swal from 'sweetalert2';
+import izitoast from 'izitoast';
 import { Redirect } from 'react-router-dom';
 
 const SignUp = (props) => {
@@ -18,9 +18,10 @@ const SignUp = (props) => {
         setLoading(true);
         if (validate(User.Username) && validate(User.Password) && validate(User.DisplayName)) {
             _Post(User).then(response => {
+                localStorage.setItem('User', JSON.stringify(response));
                 props.history.push('/Home');
             }).catch(err => {
-                Swal.fire(err);
+                izitoast.error(err);
             });
         } else {
             document.getElementById('form').classList.add('was-validated');
