@@ -71,8 +71,14 @@ function Home() {
     if (Local != null) {
         const { User, Token } = Local;
         Socket.on('Chat:Room', room => {
-            if (Conversations.filter(item => item._id !== room).length >= 1) {
+            if (Conversations.filter(item => item._id === room).length <= 0) {
+                ConversationController._GetOneRoom(Token, room).then(conve => {
+                    if (JSON.stringify(conve) !== JSON.stringify({})) {
+                        setConversations([conve]);
+                    } else {
 
+                    }
+                });
             }
         });
 
@@ -96,16 +102,16 @@ function Home() {
                             window.location.reload();
                         }).catch(err => {
                             izitoast.error(err);
-                        });             
+                        });
                     }, true],
-                    ['<button>NO</button>', function (instance, toast) {instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');}],
+                    ['<button>NO</button>', function (instance, toast) { instance.hide({ transitionOut: 'fadeOut' }, toast, 'button'); }],
                 ],
             });
         }
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
                 <div className="row h-100">
-                    <nav className="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar gradient ">
+                    <nav className="col-md-3 col-xl-2 d-none d-md-block bg-light sidebar gradient ">
                         <div className="row pt-3 justify-content-center">
                             <div className="col-5">
                                 <img src={User.UrlImage} className="rounded-circle float-right" alt="Cinque Terre" />
@@ -185,24 +191,24 @@ function Home() {
                             </div>
                         </div>
                     </nav>
-                    <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="Modal" aria-hidden="true" data-backdrop="false">>
+                    <main role="main" className="col-md-9 ml-sm-auto col-xl-10 pt-3 px-4">
+                        {Select}
+                    </main>
+                </div>
+                <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="Modal" aria-hidden="true" data-backdrop="false">>
                         <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Add Group</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <AddGroup></AddGroup>
-                                </div>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Add Group</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <AddGroup Conversations={Conversations}></AddGroup>
                             </div>
                         </div>
                     </div>
-                    <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-                        {Select}
-                    </main>
                 </div>
             </div>
         );

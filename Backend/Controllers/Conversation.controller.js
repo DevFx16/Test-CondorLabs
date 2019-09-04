@@ -3,7 +3,7 @@ const { Conversation } = require('../Models/Conversation.model');
 exports._Get = (req, res) => {
     Conversation.find().where('Members').in([req.headers._id])
         .populate({ path: 'Members', select: '-Password' }).then(conversation => {
-            return res.status(200).send(conversation);
+            return res.status(200).send(conversation !== null ? conversation : {});
         }).catch(err => {
             return res.status(406).send(err);
         });
@@ -30,7 +30,7 @@ exports._GetOneRoom = (req, res) => {
 exports._Post = (req, res) => {
     new Conversation(req.body).save().then(conversation => {
         conversation.populate({ path: 'Members', select: '-Password' }, function (err) {
-            return res.status(200).send(conversation);
+            return res.status(200).send(conversation !== null ? conversation : {});
         });
     }).catch(err => {
         return res.status(406).send(err);
@@ -39,7 +39,7 @@ exports._Post = (req, res) => {
 
 exports._Put = (req, res) => {
     Conversation.findByIdAndUpdate(req.params.Id, { '$push': { 'Messages': req.body } }, { new: true }).then(conversation => {
-        return res.status(200).send(conversation);
+        return res.status(200).send(conversation !== null ? conversation : {});
     }).catch(err => {
         return res.status(406).send(err);
     });
@@ -47,7 +47,7 @@ exports._Put = (req, res) => {
 
 exports._Delete = (req, res) => {
     Conversation.findOneAndDelete(req.params.Id).then(conversation => {
-        return res.status(200).send(conversation);
+        return res.status(200).send(conversation !== null ? conversation : {});
     }).catch(err => {
         return res.status(406).send(err);
     });

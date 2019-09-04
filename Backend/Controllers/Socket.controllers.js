@@ -12,10 +12,11 @@ exports.SocketConfig = server => {
 
         socket.on('Chat:Message', (data) => {
             socket.broadcast.to(data.Room).emit('Chat:Message', data);
+            socket.broadcast.emit('Chat:Room', data.Room);
         });
     
         socket.on('Chat:Typing', (data) => {
-            socket.broadcast.to(data.Room).emit('Chat:Message', data);
+            socket.broadcast.to(data.Room).emit('Chat:Typing', data);
         });
     });
 }

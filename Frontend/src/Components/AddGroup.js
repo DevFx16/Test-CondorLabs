@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AddGroup = () => {
+const AddGroup = ({ Conversations }) => {
 
     const [Tags, setTags] = useState([]);
 
@@ -25,16 +25,22 @@ const AddGroup = () => {
 
                                     <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuLink">
                                         <button type="button" class="dropdown-item" onClick={() => setTags(Tags.concat(['Value']))}>
-                                            <div className="row">
-                                                <div className="col">
-                                                    <div className="row align-items-center">
-                                                        <img src="https://image.flaticon.com/icons/svg/660/660611.svg" className="rounded-circle float-left" alt="Cinque Terre" width={25} height={25} />
-                                                        <h6 className="text-center font-weight-bold text-black mb-0 ml-2" >
-                                                            Fernando Araujo
-                                                        </h6>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            {
+                                                Conversations.map((item, index) => {
+                                                    return (
+                                                        <div className="row">
+                                                            <div className="col">
+                                                                <div className="row align-items-center">
+                                                                    <img src="https://image.flaticon.com/icons/svg/660/660611.svg" className="rounded-circle float-left" alt="Cinque Terre" width={25} height={25} />
+                                                                    <h6 className="text-center font-weight-bold text-black mb-0 ml-2" >
+                                                                        Fernando Araujo
+                                                                </h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
                                         </button>
                                     </div>
                                 </div>
