@@ -6,10 +6,6 @@ exports.SocketConfig = server => {
             socket.join(room);
         });
 
-        socket.on('Room:Leave', room => {
-            socket.leave(room);
-        });
-
         socket.on('Chat:Message', (data) => {
             socket.broadcast.to(data.Room).emit('Chat:Message', data);
         });

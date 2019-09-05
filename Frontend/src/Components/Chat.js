@@ -4,7 +4,6 @@ import ConversationController from '../Controllers/Conversation.controller';
 
 function Chat({ Conversation, Socket }) {
     const { User, Token } = JSON.parse(localStorage.getItem('User'));
-    var prevProps = usePrevious({ Conversation, Socket });
     const Member = Conversation.Members.filter(function (item) {
         return item._id !== User._id;
     });
@@ -24,22 +23,11 @@ function Chat({ Conversation, Socket }) {
 
     useEffect(() => {
         setMessages(Conversation.Messages);
-        if (prevProps !== undefined) Socket.emit('Room:Leave', prevProps.Conversation._id);
-        Socket.emit('Room:Join', Conversation._id);
     }, [Conversation._id]);
 
     useEffect(() => {
         document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
     }, [Messages]);
-
-
-    function usePrevious(value) {
-        const ref = useRef();
-        useEffect(() => {
-            ref.current = value;
-        });
-        return ref.current;
-    }
 
     function PushMessage() {
         const text = document.getElementById('Message').value;
@@ -52,6 +40,7 @@ function Chat({ Conversation, Socket }) {
                     Room: Conversation._id,
                     Message: message.Messages[message.Messages.length - 1]
                 });
+                Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
                 document.getElementById('Message').value = '';
                 setMessages(Messages.concat([message.Messages[message.Messages.length - 1]]));
             }).catch(err => console.log(err));

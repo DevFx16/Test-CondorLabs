@@ -58,11 +58,17 @@ function Home() {
     function _get() {
         ConversationController._GetGroups(Local.Token).then(groups => {
             if (groups) {
+                groups.map((item, index) => {
+                    Socket.emit('Room:Join', item._id);
+                });
                 setGroups(groups);
             }
         });
         ConversationController._Get(Local.Token).then(conversations => {
             if (conversations) {
+                conversations.map((item, index) => {
+                    Socket.emit('Room:Join', item._id);
+                });
                 setConversations(conversations);
             }
         });
@@ -86,8 +92,12 @@ function Home() {
     if (Local != null) {
         const { User, Token } = Local;
         Socket.on('Chat:Room', room => {
-            console.log(room);
-            if (room.Members.filter(item => item === User._id).length >= 1) {
+            const all = Conversations.concat(Groups);
+            if (room.Members.filter(item => item === User._id).length >= 1 && all.filter(item => {
+                return item.Group === undefined ?
+                    item.Members.filter(user => user._id === User._id) <= 0 :
+                    item.Group.Members.filter(user => user._id === User._id) <= 0
+            })) {
                 _get();
             }
         });
