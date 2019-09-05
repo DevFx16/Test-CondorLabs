@@ -5,7 +5,6 @@ import Chat from './Chat';
 import ListUsers from './ListUsers';
 import izitoast from 'izitoast';
 import { _Put } from '../Controllers/User.controller';
-import GroupsController from '../Controllers/Group.controller';
 import ConversationController from '../Controllers/Conversation.controller';
 import AddGroup from './AddGroup';
 import Io from 'socket.io-client';
@@ -35,7 +34,7 @@ function Home() {
                 ConversationController._Post({ Members: [Local.User._id, id] }, Local.Token).then(conversation => {
                     setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
                     setInit(true);
-                    Socket.emit('Chat:Room', {});
+                    Socket.emit('Chat:Room', { Members: [Local.User._id, id] });
                 }).catch(err => {
                     izitoast.error(err);
                 });
@@ -57,7 +56,7 @@ function Home() {
 
     //get chats
     function _get() {
-        GroupsController._Get(Local.Token).then(groups => {
+        ConversationController._GetGroups(Local.Token).then(groups => {
             if (groups) {
                 setGroups(groups);
             }
@@ -77,9 +76,9 @@ function Home() {
         } else {
             const all = Conversations.concat(Groups);
             setSearchConversation(all.filter(item => {
-                return item.DisplayName === undefined ?
+                return item.Group === undefined ?
                     item.Members.filter(user => user.DisplayName.includes(text.target.value.toUpperCase())).length > 0 :
-                    item.DisplayName.includes(text.target.value.toUpperCase());
+                    item.Group.DisplayName.includes(text.target.value.toUpperCase())
             }));
         }
     }
@@ -87,7 +86,10 @@ function Home() {
     if (Local != null) {
         const { User, Token } = Local;
         Socket.on('Chat:Room', room => {
-            _get();
+            console.log(room);
+            if (room.Members.filter(item => item === User._id).length >= 1) {
+                _get();
+            }
         });
 
         //logout
@@ -116,6 +118,7 @@ function Home() {
                 ],
             });
         }
+
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
                 <div className="row h-100">
@@ -220,7 +223,7 @@ function Home() {
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <AddGroup Conversations={Conversations} Add={(group) => setGroups(Groups.concat(group))}></AddGroup>
+                                <AddGroup Conversations={Conversations} Add={(group) => setGroups(Groups.concat(group))} Socket={Socket}></AddGroup>
                             </div>
                         </div>
                     </div>

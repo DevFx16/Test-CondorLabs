@@ -13,7 +13,7 @@ const AddGroup = ({ Conversations, Add, Socket }) => {
     }
 
     function Submit() {
-        var ids = [];
+        var ids = [User._id];
         Tags.map((item, index) => {
             ids.push(item._id);
         });
@@ -21,10 +21,14 @@ const AddGroup = ({ Conversations, Add, Socket }) => {
         if (Name !== null && Name !== '' && Name.length >= 4 && Name.length <= 30) {
             GroupController._Post(Token, {
                 Members: ids,
-                DisplayName: Name
+                DisplayName: Name.toUpperCase()
             }).then(group => {
                 Add(group);
-                Socket.emit('Chat:Room', {});
+                izitoast.success({
+                    title: 'Created',
+                    message: 'Group has been created'
+                });
+                Socket.emit('Chat:Room', { Members: ids });
             }).catch(err => {
                 izitoast.error(err);
             });
@@ -99,7 +103,7 @@ const AddGroup = ({ Conversations, Add, Socket }) => {
                 </div>
             </div>
             <div className="card-footer">
-                <button type="submit" className="btn btn-primary w-100 bg-transparent" id="collapse">
+                <button type="submit" className="btn btn-primary w-100 bg-transparent" id="collapse" onClick={Submit.bind(this)}>
                     <p className="text-center font-weight-bold text-white mb-0">
                         <span className="pr-1"><i className="fas fa-plus fa-lg"></i></span>
                         Add Group

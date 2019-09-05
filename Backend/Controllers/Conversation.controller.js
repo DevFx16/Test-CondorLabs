@@ -1,4 +1,4 @@
-const { Conversation } = require('../Models/Conversation.model');
+const { Conversation, ConversationGroup } = require('../Models/Conversation.model');
 
 exports._Get = (req, res) => {
     Conversation.find().where('Members').in([req.headers._id])
@@ -9,17 +9,19 @@ exports._Get = (req, res) => {
         });
 }
 
-exports._GetOne = (req, res) => {
-    Conversation.findOne().where('Members').all([req.headers._id, req.params.Id])
-        .populate({ path: 'Members', select: '-Password' }).then(conversation => {
-            return res.status(200).send(conversation !== null ? conversation : {});
-        }).catch(err => {
-            return res.status(406).send(err);
-        });
+exports._GetGroups = (req, res) => {
+    ConversationGroup.find().populate({
+        path: 'Group', match: { 'Members': { '$in': [req.headers._id] } },
+        populate: { path: 'Members', select: '-Password' }
+    }).then(conversation => {
+        return res.status(200).send(conversation !== null ? conversation : {});
+    }).catch(err => {
+        return res.status(406).send(err);
+    });
 }
 
-exports._GetOneRoom = (req, res) => {
-    Conversation.findOne(req.params.Room).where('Members').in([req.headers._id])
+exports._GetOne = (req, res) => {
+    Conversation.findOne().where('Members').all([req.headers._id, req.params.Id])
         .populate({ path: 'Members', select: '-Password' }).then(conversation => {
             return res.status(200).send(conversation !== null ? conversation : {});
         }).catch(err => {

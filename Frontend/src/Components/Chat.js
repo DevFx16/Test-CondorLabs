@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Message from './Message';
-import { _Put } from '../Controllers/Conversation.controller';
+import ConversationController from '../Controllers/Conversation.controller';
 
 function Chat({ Conversation, Socket }) {
     const { User, Token } = JSON.parse(localStorage.getItem('User'));
@@ -44,7 +44,7 @@ function Chat({ Conversation, Socket }) {
     function PushMessage() {
         const text = document.getElementById('Message').value;
         if (text !== null && text !== '') {
-            _Put({
+            ConversationController._Put({
                 'Message': text,
                 'IndexUser': IndexUser
             }, Token, Conversation._id).then(message => {

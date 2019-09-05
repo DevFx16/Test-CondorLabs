@@ -106,7 +106,7 @@ function ListUsers(props) {
                                 </div>
                             </div>
                         )
-                    }z
+                    }
                 </div>
             </div>
         </div>

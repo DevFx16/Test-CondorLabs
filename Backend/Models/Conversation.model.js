@@ -25,5 +25,5 @@ const ConversationGroupSchema = new schema({
 //Export model
 exports.Conversation = Moongoose.model('Conversation', ConversationSchema);
 
-//Export Model
-exports.Messages = Messages;
+//Export model
+exports.ConversationGroup = Moongoose.model('ConversationGroup', ConversationGroupSchema);

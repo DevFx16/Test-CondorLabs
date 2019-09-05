@@ -1,4 +1,5 @@
 const { Group } = require('../Models/Groups.model');
+const { ConversationGroup } = require('../Models/Conversation.model');
 
 exports._Get = (req, res) => {
     Group.find().where('Members').in([req.headers._id])
@@ -11,14 +12,21 @@ exports._Get = (req, res) => {
 
 exports._Post = (req, res) => {
     new Group(req.body).save().then(group => {
-        return res.status(200).send(groups !== null ? group : {});
+        if (group !== null) {
+            new ConversationGroup({ Group: group._id }).save().then(con => {
+                con.populate('Group', (err, doc) => {
+                    if (err) return res.status(400).send(err !== null ? err : {});
+                    return res.status(200).send(doc !== null ? doc : {});
+                });
+            });
+        }
     }).catch(err => {
         return res.status(406).send(err);
     });
 }
 
 exports._Put = (req, res) => {
-    Group.findByIdAndUpdate(req.params.Id, { '$push': { 'Messages': req.body } }, { new: true }).then(message => {
+    Group.findByIdAndUpdate(req.params.Id, req.bdoy, { new: true }).then(message => {
         return res.status(200).send(message !== null ? message : {});
     }).catch(err => {
         return res.status(406).send(err);
