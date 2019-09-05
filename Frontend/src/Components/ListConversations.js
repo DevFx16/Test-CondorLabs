@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ListMessges(props) {
 
-    const { User, Token } = JSON.parse(localStorage.getItem('User'));
+    const { User } = JSON.parse(localStorage.getItem('User'));
     return (
         <ul className="list-group w-100 bg-transparent">
             {

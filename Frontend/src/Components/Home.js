@@ -35,6 +35,7 @@ function Home() {
                 ConversationController._Post({ Members: [Local.User._id, id] }, Local.Token).then(conversation => {
                     setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
                     setInit(true);
+                    Socket.emit('Chat:Room', {});
                 }).catch(err => {
                     izitoast.error(err);
                 });
@@ -86,15 +87,7 @@ function Home() {
     if (Local != null) {
         const { User, Token } = Local;
         Socket.on('Chat:Room', room => {
-            if (Conversations.filter(item => item._id === room).length <= 0) {
-                ConversationController._GetOneRoom(Token, room).then(conve => {
-                    if (JSON.stringify(conve) !== JSON.stringify({})) {
-                        setConversations([conve]);
-                    } else {
-
-                    }
-                });
-            }
+            _get();
         });
 
         //logout
@@ -227,7 +220,7 @@ function Home() {
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <AddGroup Conversations={Conversations}></AddGroup>
+                                <AddGroup Conversations={Conversations} Add={(group) => setGroups(Groups.concat(group))}></AddGroup>
                             </div>
                         </div>
                     </div>

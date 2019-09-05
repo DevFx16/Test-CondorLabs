@@ -36,7 +36,6 @@ function ListUsers(props) {
         if (name !== null && name !== '') {
             _GetName(SkipSearch, Token, name).then(response => {
                 if (response !== null) {
-                    console.log(response);
                     setUsers(response);
                 }
             }).catch(err => {
@@ -107,7 +106,7 @@ function ListUsers(props) {
                                 </div>
                             </div>
                         )
-                    }
+                    }z
                 </div>
             </div>
         </div>
