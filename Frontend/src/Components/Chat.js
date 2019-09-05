@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Message from './Message';
 import ConversationController from '../Controllers/Conversation.controller';
+import iziToast from 'izitoast';
 
 function Chat({ Conversation, Socket }) {
     const { User, Token } = JSON.parse(localStorage.getItem('User'));
@@ -10,9 +11,26 @@ function Chat({ Conversation, Socket }) {
     const IndexUser = Conversation.Members.findIndex(item => item._id === User._id);
     const [Messages, setMessages] = useState(Conversation.Messages);
     Socket.on('Chat:Message', (data) => {
+        iziToast.show({
+            theme: 'dark',
+            title: data.Member.DisplayName,
+            displayMode: 2,
+            maxWidth: '300px',
+            message: data.Message.Message,
+            position: 'bottomCenter',
+            transitionIn: 'flipInX',
+            transitionOut: 'flipOutX',
+            progressBarColor: 'rgb(0, 255, 184)',
+            image: data.Member.UrlImage,
+            imageWidth: 70,
+            layout: 2,
+            iconColor: 'rgb(0, 255, 184)'
+        });
         if (data.Room === Conversation._id) {
             Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
             setMessages(Messages.concat([data.Message]));
+        } else {
+
         }
     });
 
@@ -38,7 +56,8 @@ function Chat({ Conversation, Socket }) {
             }, Token, Conversation._id).then(message => {
                 Socket.emit('Chat:Message', {
                     Room: Conversation._id,
-                    Message: message.Messages[message.Messages.length - 1]
+                    Message: message.Messages[message.Messages.length - 1],
+                    Member: Conversation.Members[message.Messages[message.Messages.length - 1].IndexUser]
                 });
                 Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
                 document.getElementById('Message').value = '';
