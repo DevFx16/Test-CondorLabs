@@ -12,7 +12,7 @@ function Chat({ Conversation, Socket }) {
     const [Messages, setMessages] = useState(Conversation.Messages);
     Socket.on('Chat:Message', (data) => {
         if (data.Room === Conversation._id) {
-            document.getElementById('typing').innerHTML += '';
+            Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
             setMessages(Messages.concat([data.Message]));
         }
     });
@@ -60,7 +60,7 @@ function Chat({ Conversation, Socket }) {
 
     function OnChange(text) {
         if (text.target.value === '')
-            Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' })
+            Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
     }
 
     return (

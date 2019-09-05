@@ -49,6 +49,7 @@ function Home() {
     const [Groups, setGroups] = useState([]);
     const [Init, setInit] = useState(true);
     const [Conversations, setConversations] = useState([]);
+    const [SearchConversation, setSearchConversation] = useState([]);
     useEffect(() => {
         if (Init && Local != null) _get();
     });
@@ -66,6 +67,20 @@ function Home() {
             }
         });
         setInit(false);
+    }
+
+    //search conversations
+    function Search(text) {
+        if (text.target.value === '') {
+            setSearchConversation([]);
+        } else {
+            const all = Conversations.concat(Groups);
+            setSearchConversation(all.filter(item => {
+                return item.DisplayName === undefined ?
+                    item.Members.filter(user => user.DisplayName.includes(text.target.value.toUpperCase())).length > 0 :
+                    item.DisplayName.includes(text.target.value.toUpperCase());
+            }));
+        }
     }
 
     if (Local != null) {
@@ -143,7 +158,7 @@ function Home() {
                         </div>
                         <div className="row pt-3 justify-content-center">
                             <div className="input-group w-75">
-                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" />
+                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" onChange={Search.bind(this)} />
                                 <span className="input-group-append">
                                     <div className="btn btn-link border-left-0 border text-white">
                                         <i className="fa fa-search"></i>
@@ -151,45 +166,52 @@ function Home() {
                                 </span>
                             </div>
                         </div>
-                        <div className="row pt-3 justify-content-center">
-                            <div className="accordion w-100" id="accordionExample">
-                                <div className="card bg-transparent w-100">
-                                    <div className="card-header" id="headingOne">
-                                        <h2 className="mb-0">
-                                            <button className="btn text-white w-100" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="collapse">
-                                                <h6 className="text-center font-weight-bold text-white float-left">Direct Messages</h6>
-                                                <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
-                                            </button>
-                                        </h2>
-                                    </div>
-                                    <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                                        <div className="card-body px-0 pt-0 pb-0">
-                                            <ListConversations Conversations={Conversations} Change={ChangeChat}></ListConversations>
-                                        </div>
-                                    </div>
+                        {
+                            SearchConversation.length >= 1 ?
+                                <div className="row pt-3 justify-content-center">
+                                    <ListConversations Conversations={SearchConversation} Change={ChangeChat}></ListConversations>
                                 </div>
-                                <div className="card bg-transparent">
-                                    <div className="card-header" id="headingTwo">
-                                        <h2 className="mb-0">
-                                            <div className="row w-100 mx-0 justify-content-between">
-                                                <button className="btn text-white w-75" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" id="collapse">
-                                                    <h6 className="text-center font-weight-bold text-white float-left">Groups</h6>
-                                                    <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
-                                                </button>
-                                                <button className="btn text-white w-25" type="button" data-toggle="modal" data-target="#Modal">
-                                                    <span className="float-right"><i className="fas fa-plus-circle text-white"></i></span>
-                                                </button>
+                                :
+                                <div className="row pt-3 justify-content-center">
+                                    <div className="accordion w-100" id="accordionExample">
+                                        <div className="card bg-transparent w-100">
+                                            <div className="card-header" id="headingOne">
+                                                <h2 className="mb-0">
+                                                    <button className="btn text-white w-100" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="collapse">
+                                                        <h6 className="text-center font-weight-bold text-white float-left">Direct Messages</h6>
+                                                        <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
+                                                    </button>
+                                                </h2>
                                             </div>
-                                        </h2>
-                                    </div>
-                                    <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                                        <div className="card-body px-0 pt-0 pb-0">
-                                            <ListConversations Conversations={Groups} Change={ChangeChat}></ListConversations>
+                                            <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                                <div className="card-body px-0 pt-0 pb-0">
+                                                    <ListConversations Conversations={Conversations} Change={ChangeChat}></ListConversations>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="card bg-transparent">
+                                            <div className="card-header" id="headingTwo">
+                                                <h2 className="mb-0">
+                                                    <div className="row w-100 mx-0 justify-content-between">
+                                                        <button className="btn text-white w-75" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" id="collapse">
+                                                            <h6 className="text-center font-weight-bold text-white float-left">Groups</h6>
+                                                            <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
+                                                        </button>
+                                                        <button className="btn text-white w-25" type="button" data-toggle="modal" data-target="#Modal">
+                                                            <span className="float-right"><i className="fas fa-plus-circle text-white"></i></span>
+                                                        </button>
+                                                    </div>
+                                                </h2>
+                                            </div>
+                                            <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                                <div className="card-body px-0 pt-0 pb-0">
+                                                    <ListConversations Conversations={Groups} Change={ChangeChat}></ListConversations>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                        }
                     </nav>
                     <main role="main" className="col-md-9 ml-sm-auto col-xl-10 pt-3 px-4">
                         {Select}
