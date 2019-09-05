@@ -3,7 +3,7 @@ import { _Post } from '../Controllers/User.controller';
 import izitoast from 'izitoast';
 import { Redirect } from 'react-router-dom';
 
-const SignUp = (props) => {
+const SignUp = ({ history }) => {
 
     const [Loading, setLoading] = useState(false);
 
@@ -19,7 +19,7 @@ const SignUp = (props) => {
         if (validate(User.Username) && validate(User.Password) && validate(User.DisplayName)) {
             _Post(User).then(response => {
                 localStorage.setItem('User', JSON.stringify(response));
-                props.history.push('/Home');
+                history.push('/Home');
             }).catch(err => {
                 izitoast.error(err);
             });
@@ -95,7 +95,7 @@ const SignUp = (props) => {
                         </div>
                         <div className="row justify-content-center pt-3">
                             <div className="col-md-3 align-self-center">
-                                <button type="button" className="btn btn-primary w-100 gradient" onClick={() => props.history.push('/Login')} disabled={Loading}>
+                                <button type="button" className="btn btn-primary w-100 gradient" onClick={() => history.push('/Login')} disabled={Loading}>
                                     <span className="pr-1"><i className="fas fa-user fa-lg"></i></span>
                                     <p className="text-center font-weight-bold text-white mb-0">You do have an account?</p>
                                 </button>

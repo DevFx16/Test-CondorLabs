@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { _Get, _GetName } from '../Controllers/User.controller';
 import izitoast from 'izitoast';
 
-function ListUsers(props) {
+function ListUsers({ Change }) {
 
     const [Skip, setSkip] = useState(0);
     const [SkipSearch, setSkipSearch] = useState(0);
@@ -96,7 +96,7 @@ function ListUsers(props) {
                                         <img src={item.UrlImage} className="rounded" alt="Cinque Terre" width={200} height={200} />
                                     </div>
                                     <div className="card-footer">
-                                        <button type="button" className="btn btn-primary w-100 gradient" onClick={() => props.Change(item._id)}>
+                                        <button type="button" className="btn btn-primary w-100 gradient" onClick={() => Change(item._id)}>
                                             <p className="text-center font-weight-bold text-white mb-0">
                                                 <span className="pr-1"><i className="fas fa-sms fa-lg"></i></span>
                                                 Start conversation

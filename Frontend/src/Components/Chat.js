@@ -8,36 +8,40 @@ function Chat({ Conversation, Socket }) {
     const Member = Conversation.Members.filter(function (item) {
         return item._id !== User._id;
     });
+    const ref = useRef(false);
     const IndexUser = Conversation.Members.findIndex(item => item._id === User._id);
     const [Messages, setMessages] = useState(Conversation.Messages);
-    Socket.on('Chat:Message', (data) => {
-        iziToast.show({
-            theme: 'dark',
-            title: data.Member.DisplayName,
-            displayMode: 2,
-            maxWidth: '300px',
-            message: data.Message.Message,
-            position: 'bottomCenter',
-            transitionIn: 'flipInX',
-            transitionOut: 'flipOutX',
-            progressBarColor: 'rgb(0, 255, 184)',
-            image: data.Member.UrlImage,
-            imageWidth: 70,
-            layout: 2,
-            iconColor: 'rgb(0, 255, 184)'
+    if(!ref.current){
+        Socket.on('Chat:Message', (data) => {
+            iziToast.show({
+                theme: 'dark',
+                title: data.Member.DisplayName,
+                displayMode: 2,
+                maxWidth: '300px',
+                message: data.Message.Message,
+                position: 'bottomCenter',
+                transitionIn: 'flipInX',
+                transitionOut: 'flipOutX',
+                progressBarColor: 'rgb(0, 255, 184)',
+                image: data.Member.UrlImage,
+                imageWidth: 70,
+                layout: 2,
+                iconColor: 'rgb(0, 255, 184)'
+            });
+            if (data.Room === Conversation._id) {
+                Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
+                setMessages(Messages.concat([data.Message]));
+            } else {
+    
+            }
         });
-        if (data.Room === Conversation._id) {
-            Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
-            setMessages(Messages.concat([data.Message]));
-        } else {
-
-        }
-    });
-
-    Socket.on('Chat:Typing', (data) => {
-        document.getElementById('typing').innerHTML = data.Room === Conversation._id && data.Username !== 'is not typing' ? `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
-        document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
-    });
+    
+        Socket.on('Chat:Typing', (data) => {
+            document.getElementById('typing').innerHTML = data.Room === Conversation._id && data.Username !== 'is not typing' ? `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
+            document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
+        });
+        ref.current = true;
+    }
 
     useEffect(() => {
         setMessages(Conversation.Messages);
@@ -86,7 +90,7 @@ function Chat({ Conversation, Socket }) {
                     </div>
                 </div>
             </div>
-            <div className="card-body border-shadow overflow-auto" id="scroll">
+            <div className="card-body border-shadow overflow-auto" id="scroll" >
                 {
                     Messages.map((item, index) => <Message Image={Conversation.Members[item.IndexUser].UrlImage} Username={Conversation.Members[item.IndexUser].Username} Message={item.Message}></Message>)
                 }

@@ -8,16 +8,15 @@ import { _Put } from '../Controllers/User.controller';
 import ConversationController from '../Controllers/Conversation.controller';
 import AddGroup from './AddGroup';
 import Io from 'socket.io-client';
+import Modal from './Modal';
+import UserConfig from './UserConfig';
 
 const Socket = Io();
 const _user = JSON.parse(localStorage.getItem('User'));
 if (_user !== null) {
-    const { User, Token } = _user;
+    const { Token } = _user;
     Socket.on('connect', () => {
         _Put(Token, { Status: true });
-        window.onbeforeunload = function () {
-            _Put(Token, { Status: false });
-        };
     });
 }
 
@@ -50,6 +49,8 @@ function Home() {
     const [Init, setInit] = useState(true);
     const [Conversations, setConversations] = useState([]);
     const [SearchConversation, setSearchConversation] = useState([]);
+    const ref = useRef(false);
+
     useEffect(() => {
         if (Init && Local != null) _get();
     });
@@ -91,16 +92,19 @@ function Home() {
 
     if (Local != null) {
         const { User, Token } = Local;
-        Socket.on('Chat:Room', room => {
-            const all = Conversations.concat(Groups);
-            if (room.Members.filter(item => item === User._id).length >= 1 && all.filter(item => {
-                return item.Group === undefined ?
-                    item.Members.filter(user => user._id === User._id) <= 0 :
-                    item.Group.Members.filter(user => user._id === User._id) <= 0
-            })) {
-                _get();
-            }
-        });
+        if (!ref.current) {
+            Socket.on('Chat:Room', room => {
+                const all = Conversations.concat(Groups);
+                if (room.Members.filter(item => item === User._id).length >= 1 && all.filter(item => {
+                    return item.Group === undefined ?
+                        item.Members.filter(user => user._id === User._id) <= 0 :
+                        item.Group.Members.filter(user => user._id === User._id) <= 0
+                })) {
+                    _get();
+                }
+            });
+            ref.current = true;
+        }
 
         //logout
         function _Logout() {
@@ -155,7 +159,7 @@ function Home() {
                             <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers Change={ChangeChat}></ListUsers>)}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
-                            <button type="button" className="btn btn-link text-white">
+                            <button type="button" className="btn btn-link text-white" data-toggle="modal" data-target="#Modal1">
                                 <i className="fas fa-user-cog fa-lg"></i>
                             </button>
                             <button type="button" className="btn btn-link text-white" onClick={_Logout.bind(this)}>
@@ -223,21 +227,8 @@ function Home() {
                         {Select}
                     </main>
                 </div>
-                <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="Modal" aria-hidden="true" data-backdrop="false">>
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle">Add Group</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <AddGroup Conversations={Conversations} Add={(group) => setGroups(Groups.concat(group))} Socket={Socket}></AddGroup>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <Modal Id="Modal" Title="Add Group" Content={<AddGroup Conversations={Conversations} Add={(group) => setGroups(Groups.concat(group))} Socket={Socket}></AddGroup>}></Modal>
+                <Modal Id="Modal1" Title="User Configuration" Content={<UserConfig></UserConfig>}></Modal>
             </div>
         );
     } else {
