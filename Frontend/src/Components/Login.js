@@ -3,34 +3,35 @@ import { _Login } from '../Controllers/User.controller';
 import { Redirect } from 'react-router-dom';
 import izitoast from 'izitoast';
 
+function _LoginSubmit(setLoading, history) {
+    const User = {
+        Username: document.getElementById('Username').value,
+        Password: document.getElementById('Password').value,
+    };
+    //validate form
+    setLoading(true);
+    if (validate(User.Username) && validate(User.Password)) {
+        _Login(User).then(response => {
+            localStorage.setItem('User', JSON.stringify(response));
+            history.push('/Home');
+        }).catch(err => {
+            izitoast.error(err);
+        });
+    } else {
+        document.getElementById('form').classList.add('was-validated');
+    }
+    setLoading(false);
+}
+
+
+//method for validate string
+function validate(text) {
+    return text !== null && text !== '' && text.length >= 4 && text.length <= 30;
+}
+
 const Login = ({ history }) => {
 
     const [Loading, setLoading] = useState(false);
-
-    function _LoginSubmit() {
-        const User = {
-            Username: document.getElementById('Username').value,
-            Password: document.getElementById('Password').value,
-        };
-        //validate form
-        setLoading(true);
-        if (validate(User.Username) && validate(User.Password)) {
-            _Login(User).then(response => {
-                localStorage.setItem('User', JSON.stringify(response));
-                history.push('/Home');
-            }).catch(err => {
-                izitoast.error(err);
-            });
-        } else {
-            document.getElementById('form').classList.add('was-validated');
-        }
-        setLoading(false);
-    }
-
-    //method for validate string
-    function validate(text) {
-        return text !== null && text !== '' && text.length >= 4 && text.length <= 30;
-    }
 
     if (localStorage.getItem('User') == null) {
         return (
@@ -52,7 +53,7 @@ const Login = ({ history }) => {
                                         <p className="text-center font-weight-bold text-white mb-0">DevChat</p>
                                     </div>
                                     <div className="card-body border-shadow border-bottom">
-                                        <form onSubmit={_LoginSubmit.bind(this)} id="form" noValidate action="javascript:;">
+                                        <form onSubmit={() => _LoginSubmit(setLoading, history)} id="form" noValidate action="javascript:;">
                                             <div className="input-group">
                                                 <div className="input-group-prepend">
                                                     <span className="input-group-text" id="user"><i className="fa fa-user"></i></span>

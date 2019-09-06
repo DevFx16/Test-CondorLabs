@@ -1,75 +1,71 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Message from './Message';
 import ConversationController from '../Controllers/Conversation.controller';
-import iziToast from 'izitoast';
 
-function Chat({ Conversation, Socket }) {
+//Socket on Chat:Message
+function HandlerMessage(data, _id, setMessages, Messages, Socket) {
+    if (data.Room === _id) {
+        Socket.emit('Chat:Typing', { Room: _id, Username: 'is not typing' });
+        setMessages(Messages.concat([data.Message]));
+    } else {
+
+    }
+}
+
+//Data push new Message
+function PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Socket) {
+    const text = document.getElementById('Message').value;
+    if (text !== null && text !== '') {
+        ConversationController._Put({
+            'Message': text,
+            'IndexUser': IndexUser
+        }, Token, Conversation._id).then(message => {
+            Socket.emit('Chat:Message', {
+                Room: Conversation._id,
+                Message: message.Messages[message.Messages.length - 1],
+                Member: Conversation.Members[message.Messages[message.Messages.length - 1].IndexUser]
+            });
+            Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
+            document.getElementById('Message').value = '';
+            setMessages(Messages.concat([message.Messages[message.Messages.length - 1]]));
+        }).catch(err => console.log(err));
+    }
+}
+
+//Component
+const Chat = ({ Conversation, Socket }) => {
     const { User, Token } = JSON.parse(localStorage.getItem('User'));
     const Member = Conversation.Members.filter(function (item) {
         return item._id !== User._id;
     });
-    const ref = useRef(false);
     const IndexUser = Conversation.Members.findIndex(item => item._id === User._id);
     const [Messages, setMessages] = useState(Conversation.Messages);
-    if(!ref.current){
-        Socket.on('Chat:Message', (data) => {
-            iziToast.show({
-                theme: 'dark',
-                title: data.Member.DisplayName,
-                displayMode: 2,
-                maxWidth: '300px',
-                message: data.Message.Message,
-                position: 'bottomCenter',
-                transitionIn: 'flipInX',
-                transitionOut: 'flipOutX',
-                progressBarColor: 'rgb(0, 255, 184)',
-                image: data.Member.UrlImage,
-                imageWidth: 70,
-                layout: 2,
-                iconColor: 'rgb(0, 255, 184)'
-            });
-            if (data.Room === Conversation._id) {
-                Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
-                setMessages(Messages.concat([data.Message]));
-            } else {
-    
-            }
-        });
-    
-        Socket.on('Chat:Typing', (data) => {
-            document.getElementById('typing').innerHTML = data.Room === Conversation._id && data.Username !== 'is not typing' ? `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
-            document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
-        });
-        ref.current = true;
-    }
 
+    Socket.on('Chat:Typing', (data) => {
+        document.getElementById('typing').innerHTML = data.Room === Conversation._id && data.Username !== 'is not typing' ? `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
+        document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
+    });
+
+    //useEffect for props
     useEffect(() => {
         setMessages(Conversation.Messages);
     }, [Conversation._id]);
 
+    //useEffect for all
+    useEffect(() => {
+        const handler = (data) => HandlerMessage(data, Conversation._id, setMessages, Messages, Socket);
+        Socket.on('Chat:Message', handler);
+        return () => {
+            Socket.off('Chat:Message', handler);
+        };
+    })
+
+    //useEffect for Messages
     useEffect(() => {
         document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
     }, [Messages]);
 
-    function PushMessage() {
-        const text = document.getElementById('Message').value;
-        if (text !== null && text !== '') {
-            ConversationController._Put({
-                'Message': text,
-                'IndexUser': IndexUser
-            }, Token, Conversation._id).then(message => {
-                Socket.emit('Chat:Message', {
-                    Room: Conversation._id,
-                    Message: message.Messages[message.Messages.length - 1],
-                    Member: Conversation.Members[message.Messages[message.Messages.length - 1].IndexUser]
-                });
-                Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
-                document.getElementById('Message').value = '';
-                setMessages(Messages.concat([message.Messages[message.Messages.length - 1]]));
-            }).catch(err => console.log(err));
-        }
-    }
-
+    //Listener onchage text
     function OnChange(text) {
         if (text.target.value === '')
             Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
@@ -99,7 +95,7 @@ function Chat({ Conversation, Socket }) {
                 <div className="input-group">
                     <textarea name="" className="form-control type_msg" placeholder="Type your message..." id="Message" style={{ resize: 'none' }} onKeyPress={() => Socket.emit('Chat:Typing', { Room: Conversation._id, Username: User.Username })} onChange={OnChange.bind(this)}></textarea>
                     <div className="input-group-append">
-                        <button className="input-group-text send_btn" onClick={PushMessage.bind(this)}><i className="fas fa-location-arrow"></i></button>
+                        <button className="input-group-text send_btn" onClick={() => PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Socket)}><i className="fas fa-location-arrow"></i></button>
                     </div>
                 </div>
             </div>

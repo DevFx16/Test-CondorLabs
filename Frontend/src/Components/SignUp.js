@@ -3,36 +3,37 @@ import { _Post } from '../Controllers/User.controller';
 import izitoast from 'izitoast';
 import { Redirect } from 'react-router-dom';
 
+//Method for create new user
+function _SignUp(setLoading, history) {
+    const User = {
+        Username: document.getElementById('Username').value,
+        Password: document.getElementById('Password').value,
+        DisplayName: document.getElementById('Name').value.toUpperCase()
+    };
+    //validate form
+    setLoading(true);
+    if (validate(User.Username) && validate(User.Password) && validate(User.DisplayName)) {
+        _Post(User).then(response => {
+            localStorage.setItem('User', JSON.stringify(response));
+            history.push('/Home');
+        }).catch(err => {
+            izitoast.error(err);
+        });
+    } else {
+        document.getElementById('form').classList.add('was-validated');
+    }
+    setLoading(false);
+}
+
+//method for validate string
+function validate(text) {
+    return text !== null && text !== '' && text.length >= 4 && text.length <= 30;
+}
+
+//Component
 const SignUp = ({ history }) => {
 
     const [Loading, setLoading] = useState(false);
-
-    //Method for create new user
-    function _SignUp() {
-        const User = {
-            Username: document.getElementById('Username').value,
-            Password: document.getElementById('Password').value,
-            DisplayName: document.getElementById('Name').value.toUpperCase()
-        };
-        //validate form
-        setLoading(true);
-        if (validate(User.Username) && validate(User.Password) && validate(User.DisplayName)) {
-            _Post(User).then(response => {
-                localStorage.setItem('User', JSON.stringify(response));
-                history.push('/Home');
-            }).catch(err => {
-                izitoast.error(err);
-            });
-        } else {
-            document.getElementById('form').classList.add('was-validated');
-        }
-        setLoading(false);
-    }
-
-    //method for validate string
-    function validate(text) {
-        return text !== null && text !== '' && text.length >= 4 && text.length <= 30;
-    }
 
     if (localStorage.getItem('User') == null) {
         return (
@@ -54,7 +55,7 @@ const SignUp = ({ history }) => {
                                         <p className="text-center font-weight-bold text-white mb-0">DevChat</p>
                                     </div>
                                     <div className="card-body border-shadow border-bottom">
-                                        <form onSubmit={_SignUp.bind(this)} id="form" noValidate action="javascript:;">
+                                        <form onSubmit={() => _SignUp(setLoading, history)} id="form" noValidate action="javascript:;">
                                             <div className="input-group">
                                                 <div className="input-group-prepend">
                                                     <span className="input-group-text" id="user"><i className="fa fa-user"></i></span>

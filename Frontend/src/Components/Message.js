@@ -14,10 +14,10 @@ function Message({Image, Username, Message}) {
             }
             <div className="col">
                 <div className={User.Username === Username ? 'row justify-content-end' : 'row'}>
-                    <p className={User.Username === Username ? text + 'mr-2 mr-0-md font-weight-bold' : text + 'ml-2 ml-0-md font-weight-bold'}>{Username}</p>
+                    <p className={User.Username === Username ? text + 'mr-0-md mr-2-sm font-weight-bold' : text + 'ml-0-md ml-2-sm font-weight-bold'}>{Username}</p>
                 </div>
                 <div className={User.Username === Username ? 'row justify-content-end' : 'row'}>
-                    <p className={User.Username === Username ? text + 'mr-2 mr-0-md' : text + 'ml-2 ml-0-md'}>{Message}</p>
+                    <p className={User.Username === Username ? text + 'mr-0-md mr-2-sm' : text + 'ml-0-md ml-2-sm'}>{Message}</p>
                 </div>
             </div>
             {

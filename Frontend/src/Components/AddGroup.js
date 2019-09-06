@@ -2,6 +2,33 @@ import React, { useState } from 'react';
 import GroupController from '../Controllers/Group.controller';
 import izitoast from 'izitoast';
 
+//Submit group
+function Submit(User, Socket, Add, Token, Tags) {
+    var ids = [User._id];
+    Tags.map((item, index) => {
+        ids.push(item._id);
+    });
+    const Name = document.getElementById('Name').value;
+    if (Name !== null && Name !== '' && Name.length >= 4 && Name.length <= 30) {
+        GroupController._Post(Token, {
+            Members: ids,
+            DisplayName: Name.toUpperCase()
+        }).then(group => {
+            Add(group);
+            izitoast.success({
+                title: 'Created',
+                message: 'Group has been created'
+            });
+            Socket.emit('Chat:Room', { Members: ids });
+        }).catch(err => {
+            izitoast.error(err);
+        });
+    } else {
+        document.getElementById('form').classList.add('was-validated');
+    }
+}
+
+//Component
 const AddGroup = ({ Conversations, Add, Socket }) => {
 
     const [Tags, setTags] = useState([]);
@@ -12,37 +39,12 @@ const AddGroup = ({ Conversations, Add, Socket }) => {
             setTags(Tags.concat(member));
     }
 
-    function Submit() {
-        var ids = [User._id];
-        Tags.map((item, index) => {
-            ids.push(item._id);
-        });
-        const Name = document.getElementById('Name').value;
-        if (Name !== null && Name !== '' && Name.length >= 4 && Name.length <= 30) {
-            GroupController._Post(Token, {
-                Members: ids,
-                DisplayName: Name.toUpperCase()
-            }).then(group => {
-                Add(group);
-                izitoast.success({
-                    title: 'Created',
-                    message: 'Group has been created'
-                });
-                Socket.emit('Chat:Room', { Members: ids });
-            }).catch(err => {
-                izitoast.error(err);
-            });
-        } else {
-            document.getElementById('form').classList.add('was-validated');
-        }
-    }
-
     return (
         <div className="card gradient">
             <div className="card-body">
                 <div className="row">
                     <div className="col">
-                        <form onSubmit={Submit.bind(this)} id="form" noValidate action="javascript:;">
+                        <form id="form" noValidate action="javascript:;">
                             <div className="input-group pt-3 w-100">
                                 <div className="input-group-prepend">
                                     <span className="input-group-text" id="pass"><i className="fa fa-user-tag"></i></span>
@@ -103,7 +105,7 @@ const AddGroup = ({ Conversations, Add, Socket }) => {
                 </div>
             </div>
             <div className="card-footer">
-                <button type="submit" className="btn btn-primary w-100 bg-transparent" id="collapse" onClick={Submit.bind(this)}>
+                <button type="submit" className="btn btn-primary w-100 bg-transparent" id="collapse" onClick={() => Submit(User, Socket, Add, Token, Tags)}>
                     <p className="text-center font-weight-bold text-white mb-0">
                         <span className="pr-1"><i className="fas fa-plus fa-lg"></i></span>
                         Add Group

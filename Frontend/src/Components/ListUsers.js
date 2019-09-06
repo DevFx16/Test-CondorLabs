@@ -1,53 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { _Get, _GetName } from '../Controllers/User.controller';
 import izitoast from 'izitoast';
 
-function ListUsers({ Change }) {
-
-    const [Skip, setSkip] = useState(0);
-    const [SkipSearch, setSkipSearch] = useState(0);
-    const [Users, setUsers] = useState([]);
-    const [Backup, setBackup] = useState([])
-    const { User, Token } = JSON.parse(localStorage.getItem('User'));
-    const [Init, setInit] = useState(true);
-
-    //manage state
-    useEffect(() => {
-        if (Init) getUsers();
+//get users form backend
+function getUsers(Skip, Token, ref, Users, setUsers, Backup, setBackup, setSkip) {
+    _Get(Skip, Token).then(response => {
+        if (response !== null) {
+            ref.current = false;
+            setUsers(Users.concat(response));
+            setBackup(Backup.concat(response));
+            setSkip(Skip + 50);
+        }
+    }).catch(err => {
+        izitoast.error(err);
     });
+}
 
-    //get users form backend
-    function getUsers() {
-        _Get(Skip, Token).then(response => {
+//search user
+function Search(SkipSearch, Token, setUsers) {
+    var name = document.getElementById('search').value;
+    if (name !== null && name !== '') {
+        _GetName(SkipSearch, Token, name).then(response => {
             if (response !== null) {
-                setInit(false);
-                setUsers(Users.concat(response));
-                setBackup(Backup.concat(response));
-                setSkip(Skip + 50);
+                setUsers(response);
             }
         }).catch(err => {
             izitoast.error(err);
         });
     }
+}
 
-    //search user
-    function Search() {
-        var name = document.getElementById('search').value;
-        if (name !== null && name !== '') {
-            _GetName(SkipSearch, Token, name).then(response => {
-                if (response !== null) {
-                    setUsers(response);
-                }
-            }).catch(err => {
-                izitoast.error(err);
-            });
-        }
-    }
+//Component
+const ListUsers = ({ Change }) => {
+
+    const [Skip, setSkip] = useState(0);
+    const [SkipSearch, setSkipSearch] = useState(0);
+    const [Users, setUsers] = useState([]);
+    const [Backup, setBackup] = useState([]);
+    const { Token } = JSON.parse(localStorage.getItem('User'));
+    const ref = useRef(true);
+
+    //manage state
+    useEffect(() => {
+        if (ref.current) getUsers(Skip, Token, ref, Users, setUsers, Backup, setBackup, setSkip);
+    });
+
     //onChangeInput
     function onChange(text) {
-        if (text.target.value === '' || text.target.value === null) {
+        if (text.target.value === '' || text.target.value === null)
             setUsers(Backup);
-        }
     }
 
     return (
@@ -61,7 +62,7 @@ function ListUsers({ Change }) {
                         <div className="input-group w-100">
                             <input className="form-control py-2 border-right-0 border bg-transparent text-white" id="search" type="search" placeholder="Search user for name" onChange={onChange.bind(this)} />
                             <span className="input-group-append">
-                                <button className="btn btn-link border-left-0 border text-white" onClick={Search.bind(this)}>
+                                <button className="btn btn-link border-left-0 border text-white" onClick={() => Search(SkipSearch, Token, setUsers)}>
                                     <i className="fa fa-search"></i>
                                 </button>
                             </span>

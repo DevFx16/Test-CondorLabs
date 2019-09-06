@@ -9,136 +9,144 @@ import ConversationController from '../Controllers/Conversation.controller';
 import AddGroup from './AddGroup';
 import Io from 'socket.io-client';
 import Modal from './Modal';
+import iziToast from 'izitoast';
 
 const Socket = Io();
-const _user = JSON.parse(localStorage.getItem('User'));
-if (_user !== null) {
-    const { Token } = _user;
-    Socket.on('connect', () => {
-        _Put(Token, { Status: true }).then(user => {
-            if (user) {
-                localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
-            }
-        });
+
+//Socket Connect
+function SocketConnect(User, setGroups, setConversations) {
+    const { Token } = User;
+    _Put(Token, { Status: true }).then(user => {
+        if (user) {
+            localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
+        }
+        _get(User, setGroups, setConversations);
     });
 }
 
+//Socket On Chat:Room
+function HandleRoom(Conversations, room, setGroups, setConversations, Storage) {
+    const { User } = Storage;
+    if (room.Members.filter(item => item === User._id).length >= 1 && Conversations.filter(item => {
+        return item.Group === undefined ?
+            item.Members.filter(user => user._id === User._id) <= 0 :
+            item.Group.Members.filter(user => user._id === User._id) <= 0
+    })) {
+        _get(Storage, setGroups, setConversations);
+    }
+}
 
-function Home() {
-    var Local = JSON.parse(localStorage.getItem('User'));
+//get chats
+function _get(User, setGroups, setConversations) {
+    const { Token } = User;
+    ConversationController._GetGroups(Token).then(groups => {
+        if (groups) {
+            groups.map((item, index) => {
+                Socket.emit('Room:Join', item._id);
+            });
+            setGroups(groups);
+        }
+    });
+    ConversationController._Get(Token).then(conversations => {
+        if (conversations) {
+            conversations.map((item, index) => {
+                Socket.emit('Room:Join', item._id);
+            });
+            setConversations(conversations);
+        }
+    });
+}
 
-    //Change to chat
-    function ChangeChat(id) {
-        ConversationController._GetOne(Local.Token, id).then(conversation => {
-            if (conversation !== null && JSON.stringify({}) !== JSON.stringify(conversation)) {
-                setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
-            } else {
-                ConversationController._Post({ Members: [Local.User._id, id] }, Local.Token).then(conversation => {
-                    setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
-                    setInit(true);
-                    Socket.emit('Chat:Room', { Members: [Local.User._id, id] });
+//search conversations
+function Search(text, Conversations, setSearchConversation) {
+    if (text.target.value === '') {
+        setSearchConversation([]);
+    } else {
+        setSearchConversation(Conversations.filter(item => {
+            return item.Group === undefined ?
+                item.Members.filter(user => user.DisplayName.includes(text.target.value.toUpperCase())).length > 0 :
+                item.Group.DisplayName.includes(text.target.value.toUpperCase())
+        }));
+    }
+}
+
+//logout
+function _Logout(Token) {
+    izitoast.question({
+        timeout: 20000,
+        close: false,
+        overlay: true,
+        displayMode: 'once',
+        id: 'question',
+        zindex: 999,
+        title: 'Hey',
+        message: 'are you sure to leave?',
+        position: 'center',
+        buttons: [
+            ['<button><b>YES</b></button>', function (instance, toast) {
+                instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                _Put(Token, { Status: false }).then(user => {
+                    localStorage.clear();
+                    window.location.reload();
                 }).catch(err => {
                     izitoast.error(err);
                 });
-            }
-        }).catch(err => {
-            izitoast.error(err);
-        });
-    }
+            }, true],
+            ['<button>NO</button>', function (instance, toast) { instance.hide({ transitionOut: 'fadeOut' }, toast, 'button'); }],
+        ],
+    });
+}
+
+//Change to chat
+function ChangeChat(id, Storage, Conversations, setConversations, setSelect) {
+    const { Token, User } = Storage;
+    ConversationController._GetOne(Token, id).then(conversation => {
+        if (conversation !== null && JSON.stringify({}) !== JSON.stringify(conversation)) {
+            setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
+        } else {
+            ConversationController._Post({ Members: [User._id, id] }, Token).then(conversation => {
+                setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
+                setConversations(Conversations.concat([conversation]));
+                Socket.emit('Chat:Room', { Members: [User._id, id] });
+            }).catch(err => {
+                izitoast.error(err);
+            });
+        }
+    }).catch(err => {
+        izitoast.error(err);
+    });
+}
+
+//Component
+const Home = () => {
+    var Local = JSON.parse(localStorage.getItem('User'));
 
     //variable that controls the main 
-    const [Select, setSelect] = useState(<ListUsers Change={ChangeChat}></ListUsers>);
+    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)} />);
     const [Groups, setGroups] = useState([]);
-    const [Init, setInit] = useState(true);
     const [Conversations, setConversations] = useState([]);
     const [SearchConversation, setSearchConversation] = useState([]);
     const ref = useRef(false);
 
     useEffect(() => {
-        if (Init && Local != null) _get();
-    });
-
-    //get chats
-    function _get() {
-        ConversationController._GetGroups(Local.Token).then(groups => {
-            if (groups) {
-                groups.map((item, index) => {
-                    Socket.emit('Room:Join', item._id);
-                });
-                setGroups(groups);
-            }
-        });
-        ConversationController._Get(Local.Token).then(conversations => {
-            if (conversations) {
-                conversations.map((item, index) => {
-                    Socket.emit('Room:Join', item._id);
-                });
-                setConversations(conversations);
-            }
-        });
-        setInit(false);
-    }
-
-    //search conversations
-    function Search(text) {
-        if (text.target.value === '') {
-            setSearchConversation([]);
-        } else {
-            const all = Conversations.concat(Groups);
-            setSearchConversation(all.filter(item => {
-                return item.Group === undefined ?
-                    item.Members.filter(user => user.DisplayName.includes(text.target.value.toUpperCase())).length > 0 :
-                    item.Group.DisplayName.includes(text.target.value.toUpperCase())
-            }));
+        if (!ref.current) {
+            _get(Local, setGroups, setConversations);
+            ref.current = true;
         }
-    }
+        if (Local !== null) {
+            const Handle = (data) => HandleRoom(Conversations.concat(Groups), data, setGroups, setConversations, Local);
+            const HandleConnect = () => SocketConnect(Local, setGroups, setConversations);
+            Socket.on('Chat:Room', Handle);
+            Socket.on('connect', HandleConnect);
+            return () => {
+                Socket.off('Chat:Room', Handle);
+                Socket.off('connect', HandleConnect);
+            }
+        }
+    });
 
     if (Local != null) {
         const { User, Token } = Local;
-        if (!ref.current) {
-            Socket.on('Chat:Room', room => {
-                const all = Conversations.concat(Groups);
-                if (room.Members.filter(item => item === User._id).length >= 1 && all.filter(item => {
-                    return item.Group === undefined ?
-                        item.Members.filter(user => user._id === User._id) <= 0 :
-                        item.Group.Members.filter(user => user._id === User._id) <= 0
-                })) {
-                    _get();
-                }
-            });
-            ref.current = true;
-        }
-
-        function UploadImage(files) {
-            _PutUpload(Token, files.target.files[0]);
-        }
-
-        //logout
-        function _Logout() {
-            izitoast.question({
-                timeout: 20000,
-                close: false,
-                overlay: true,
-                displayMode: 'once',
-                id: 'question',
-                zindex: 999,
-                title: 'Hey',
-                message: 'are you sure to leave?',
-                position: 'center',
-                buttons: [
-                    ['<button><b>YES</b></button>', function (instance, toast) {
-                        instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
-                        _Put(Token, { Status: false }).then(user => {
-                            localStorage.clear();
-                            window.location.reload();
-                        }).catch(err => {
-                            izitoast.error(err);
-                        });
-                    }, true],
-                    ['<button>NO</button>', function (instance, toast) { instance.hide({ transitionOut: 'fadeOut' }, toast, 'button'); }],
-                ],
-            });
-        }
 
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
@@ -147,9 +155,9 @@ function Home() {
                         <div className="row pt-3 justify-content-center">
                             <div className="col-5 h-50">
                                 <div className="hovereffect rounded-circle float-right">
-                                    <img className="rounded-circle img-fluid float-right" src={User.UrlImage} />
+                                    <img className="rounded-circle img-fluid float-right" src={User.UrlImage} width={96} height={96} />
                                     <div className="overlay rounded-circle float-right">
-                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={UploadImage.bind(this)} />
+                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => _PutUpload(Token, files.target.files[0])} />
                                         <label for="imageUpload">
                                             <i className="fas fa-upload text-white"></i>
                                         </label>
@@ -171,19 +179,19 @@ function Home() {
                             </div>
                         </div>
                         <div className="row w-100 justify-content-between mx-0 pt-3">
-                            <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers Change={ChangeChat}></ListUsers>)}>
+                            <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)}></ListUsers>)}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
                             <button type="button" className="btn btn-link text-white">
                                 <i className="fas fa-user-times fa-lg"></i>
                             </button>
-                            <button type="button" className="btn btn-link text-white" onClick={_Logout.bind(this)}>
+                            <button type="button" className="btn btn-link text-white" onClick={() => _Logout(Token)}>
                                 <i className="fas fa-sign-out-alt fa-lg"></i>
                             </button>
                         </div>
                         <div className="row pt-3 justify-content-center">
                             <div className="input-group w-75">
-                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" onChange={Search.bind(this)} />
+                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" onChange={(text) => Search(text, Conversations.concat(Groups), setSearchConversation)} />
                                 <span className="input-group-append">
                                     <div className="btn btn-link border-left-0 border text-white">
                                         <i className="fa fa-search"></i>
@@ -194,7 +202,7 @@ function Home() {
                         {
                             SearchConversation.length >= 1 ?
                                 <div className="row pt-3 justify-content-center">
-                                    <ListConversations Conversations={SearchConversation} Change={ChangeChat}></ListConversations>
+                                    <ListConversations Conversations={SearchConversation} Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)}></ListConversations>
                                 </div>
                                 :
                                 <div className="row pt-3 justify-content-center">
@@ -210,7 +218,7 @@ function Home() {
                                             </div>
                                             <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                                                 <div className="card-body px-0 pt-0 pb-0">
-                                                    <ListConversations Conversations={Conversations} Change={ChangeChat}></ListConversations>
+                                                    <ListConversations Conversations={Conversations} Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)}></ListConversations>
                                                 </div>
                                             </div>
                                         </div>
@@ -230,7 +238,7 @@ function Home() {
                                             </div>
                                             <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                                                 <div className="card-body px-0 pt-0 pb-0">
-                                                    <ListConversations Conversations={Groups} Change={ChangeChat}></ListConversations>
+                                                    <ListConversations Conversations={Groups} Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)}></ListConversations>
                                                 </div>
                                             </div>
                                         </div>
