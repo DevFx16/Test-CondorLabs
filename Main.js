@@ -14,6 +14,7 @@ app.use(errors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname + '/Frontend/build')));
+app.use('/Images',express.static(path.join(__dirname + '/Backend/Uploads')));
 
 //sent the frontend made in react
 app.get('/', function (req, res) {

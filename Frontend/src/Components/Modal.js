@@ -12,7 +12,7 @@ const Modal = ({ Id, Content, Title }) => {
                         </button>
                     </div>
                     <div class="modal-body">
-                        <Content></Content>
+                        {Content}
                     </div>
                 </div>
             </div>

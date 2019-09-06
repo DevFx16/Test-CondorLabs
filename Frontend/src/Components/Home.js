@@ -1,22 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Redirect } from 'react-router-dom';
 import ListConversations from './ListConversations';
 import Chat from './Chat';
 import ListUsers from './ListUsers';
 import izitoast from 'izitoast';
-import { _Put } from '../Controllers/User.controller';
+import { _Put, _PutUpload } from '../Controllers/User.controller';
 import ConversationController from '../Controllers/Conversation.controller';
 import AddGroup from './AddGroup';
 import Io from 'socket.io-client';
 import Modal from './Modal';
-import UserConfig from './UserConfig';
 
 const Socket = Io();
 const _user = JSON.parse(localStorage.getItem('User'));
 if (_user !== null) {
     const { Token } = _user;
     Socket.on('connect', () => {
-        _Put(Token, { Status: true });
+        _Put(Token, { Status: true }).then(user => {
+            if (user) {
+                localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
+            }
+        });
     });
 }
 
@@ -106,6 +109,10 @@ function Home() {
             ref.current = true;
         }
 
+        function UploadImage(files) {
+            _PutUpload(Token, files.target.files[0]);
+        }
+
         //logout
         function _Logout() {
             izitoast.question({
@@ -138,8 +145,16 @@ function Home() {
                 <div className="row h-100">
                     <nav className="col-md-3 col-xl-2 d-none d-md-block bg-light sidebar gradient ">
                         <div className="row pt-3 justify-content-center">
-                            <div className="col-5">
-                                <img src={User.UrlImage} className="rounded-circle float-right" alt="Cinque Terre" />
+                            <div className="col-5 h-50">
+                                <div className="hovereffect rounded-circle float-right">
+                                    <img className="rounded-circle img-fluid float-right" src={User.UrlImage} />
+                                    <div className="overlay rounded-circle float-right">
+                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={UploadImage.bind(this)} />
+                                        <label for="imageUpload">
+                                            <i className="fas fa-upload text-white"></i>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                             <div className="col">
                                 <div className="row">
@@ -159,8 +174,8 @@ function Home() {
                             <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers Change={ChangeChat}></ListUsers>)}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
-                            <button type="button" className="btn btn-link text-white" data-toggle="modal" data-target="#Modal1">
-                                <i className="fas fa-user-cog fa-lg"></i>
+                            <button type="button" className="btn btn-link text-white">
+                                <i className="fas fa-user-times fa-lg"></i>
                             </button>
                             <button type="button" className="btn btn-link text-white" onClick={_Logout.bind(this)}>
                                 <i className="fas fa-sign-out-alt fa-lg"></i>
@@ -228,7 +243,6 @@ function Home() {
                     </main>
                 </div>
                 <Modal Id="Modal" Title="Add Group" Content={<AddGroup Conversations={Conversations} Add={(group) => setGroups(Groups.concat(group))} Socket={Socket}></AddGroup>}></Modal>
-                <Modal Id="Modal1" Title="User Configuration" Content={<UserConfig></UserConfig>}></Modal>
             </div>
         );
     } else {
