@@ -17,7 +17,7 @@ export default function ListMessges({ Conversations, Change }) {
         <ul className="list-group w-100 bg-transparent">
             {
                 Conversations.map((item, index) => {
-                    if (item.Group !== undefined) {
+                    if (item.Group !== undefined && item.Group !== null) {
                         return (
                             Button(item._id, item.Group.UrlImage, item.Group.DisplayName, index, true)
                         );

@@ -71,11 +71,11 @@ const ListUsers = ({ Change }) => {
                 </div>
             </div>
             <div className="card-body border-shadow overflow-auto">
-                <div className="row justify-content-center">
+                <div className="row justify-content-start">
                     {
                         Users.map((item, index) =>
-                            <div className="col pb-2 align-self-center animated bounceIn">
-                                <div className="card bg-transparent mr-0 px-0" style={{ width: '250px' }}>
+                            <div className="col col-md-6 col-lg-5 col-xl-4 pb-2 align-self-center animated bounceIn">
+                                <div className="card bg-transparent mr-0 px-0" >
                                     <div className="card-header">
                                         <div className="row">
                                             <div className="col">
@@ -93,7 +93,7 @@ const ListUsers = ({ Change }) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="card-body">
+                                    <div className="card-body align-self-center">
                                         <img src={item.UrlImage} className="rounded" alt="Cinque Terre" width={200} height={200} />
                                     </div>
                                     <div className="card-footer">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Message from './Message';
 import ConversationController from '../Controllers/Conversation.controller';
 

@@ -11,8 +11,8 @@ exports._Get = async (req, res) => {
 
 exports._GetGroups = async (req, res) => {
     ConversationGroup.find().populate({
-        path: 'Group', match: { 'Members': { '$in': [req.headers._id] } },
-        populate: { path: 'Members', select: '-Password' }
+        path: 'Group',
+        populate: { path: 'Members', select: '-Password', match: { 'Members': { '$in': [req.headers._id] } } }
     }).then(conversation => {
         return res.status(200).send(conversation !== null ? conversation : {});
     }).catch(err => {
@@ -22,8 +22,8 @@ exports._GetGroups = async (req, res) => {
 
 exports._GetOneGroup = async (req, res) => {
     ConversationGroup.findOne({ '_id': req.params.Id }).populate({
-        path: 'Group', match: { 'Members': { '$in': [req.headers._id] } },
-        populate: { path: 'Members', select: '-Password' }
+        path: 'Group',
+        populate: { path: 'Members', select: '-Password', match: { 'Members': { '$in': [req.headers._id] } } }
     }).then(conversation => {
         return res.status(200).send(conversation !== null ? conversation : {});
     }).catch(err => {

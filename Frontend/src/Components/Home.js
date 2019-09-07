@@ -40,18 +40,14 @@ function HandleRoom(Conversations, room, setGroups, setConversations, Storage) {
 function _get(User, setGroups, setConversations) {
     const { Token } = User;
     ConversationController._GetGroups(Token).then(groups => {
-        if (groups) {
-            groups.map((item, index) => {
-                Socket.emit('Room:Join', item._id);
-            });
+        if (groups !== null && groups !== null && JSON.stringify({}) !== JSON.stringify(groups)) {
+            groups.map((item, index) => Socket.emit('Room:Join', item._id));
             setGroups(groups);
         }
     });
     ConversationController._Get(Token).then(conversations => {
-        if (conversations) {
-            conversations.map((item, index) => {
-                Socket.emit('Room:Join', item._id);
-            });
+        if (conversations !== null && conversations !== null && JSON.stringify({}) !== JSON.stringify(conversations)) {
+            conversations.map((item, index) => Socket.emit('Room:Join', item._id));
             setConversations(conversations);
         }
     });
@@ -118,12 +114,12 @@ function GetConversationGroupChat(id, setSelect, Token) {
 }
 
 //get change image
-function ChangeImageProfile(Token, File, setUpdate) {
+function ChangeImageProfile(Token, File, setLocal) {
     if (File.name !== undefined) {
         _PutUpload(Token, File).then(user => {
             if (user !== null && JSON.stringify({}) !== JSON.stringify(user)) {
                 localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
-                setUpdate(true);
+                setLocal(JSON.parse(localStorage.getItem('User')));
             }
         }).catch(err => {
             iziToast.error(err);
@@ -153,14 +149,11 @@ function GetConversationChat(id, Conversations, setConversations, setSelect, Sto
 
 //Component
 const Home = () => {
-    var Local = JSON.parse(localStorage.getItem('User'));
-
-    //variable that controls the main 
-    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false)} />);
     const [Groups, setGroups] = useState([]);
     const [Conversations, setConversations] = useState([]);
     const [SearchConversation, setSearchConversation] = useState([]);
-    const [Update, setUpdate] = useState(false)
+    const [Local, setLocal] = useState(JSON.parse(localStorage.getItem('User')));
+    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false)} />);
     const ref = useRef(false);
 
     useEffect(() => {
@@ -180,10 +173,6 @@ const Home = () => {
         }
     });
 
-    useEffect(() => {
-        if (Update) Local = JSON.parse(localStorage.getItem('User'));
-        setUpdate(false);
-    }, [Update])
 
     if (Local != null) {
         const { User, Token } = Local;
@@ -193,18 +182,18 @@ const Home = () => {
                 <div className="row h-100">
                     <nav className="col-md-3 col-xl-2 d-none d-md-block bg-light sidebar gradient ">
                         <div className="row pt-3 justify-content-center">
-                            <div className="col-6 col-lg-5 col-xl-4 col-md-5 align-self-center">
-                                <div className="hovereffect rounded-circle float-right">
-                                    <img className="rounded-circle img-fluid float-right" src={User.UrlImage} />
-                                    <div className="overlay rounded-circle float-right">
-                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setUpdate)} />
+                            <div className="col-6 col-md-5 col-lg-4 col-xl-5 pl-1 align-self-center">
+                                <div className="hovereffect rounded-circle float-left">
+                                    <img className="rounded-circle img-fluid" src={User.UrlImage} />
+                                    <div className="overlay rounded-circle">
+                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setLocal)} />
                                         <label for="imageUpload">
                                             <i className="fas fa-upload text-white"></i>
                                         </label>
                                     </div>
                                 </div>
                             </div>
-                            <div className="col align-self-center">
+                            <div className="col pl-1 align-self-center">
                                 <div className="row">
                                     <h6 className="text-center font-weight-bold text-white">
                                         {User.Username}

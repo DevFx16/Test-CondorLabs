@@ -5,9 +5,7 @@ import izitoast from 'izitoast';
 //Submit group
 function Submit(User, Socket, Add, Token, Tags) {
     var ids = [User._id];
-    Tags.map((item, index) => {
-        ids.push(item._id);
-    });
+    Tags.map((item, index) => ids.push(item._id));
     const Name = document.getElementById('Name').value;
     if (Name !== null && Name !== '' && Name.length >= 4 && Name.length <= 30) {
         GroupController._Post(Token, {
