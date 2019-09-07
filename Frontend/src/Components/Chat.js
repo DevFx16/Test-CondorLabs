@@ -32,13 +32,17 @@ function PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Sock
     }
 }
 
+function FindIndex(Array, User) { return Array.findIndex(item => item._id === User._id); }
+
 //Component
-const Chat = ({ Conversation, Socket }) => {
+const Chat = ({ Conversation, Socket, isGroup }) => {
     const { User, Token } = JSON.parse(localStorage.getItem('User'));
-    const Member = Conversation.Members.filter(function (item) {
-        return item._id !== User._id;
-    });
-    const IndexUser = Conversation.Members.findIndex(item => item._id === User._id);
+    var Member;
+    if (!isGroup)
+        Member = Conversation.Members.filter(function (item) {
+            return item._id !== User._id;
+        });
+    const IndexUser = isGroup ? FindIndex(Conversation.Group.Members, User) : FindIndex(Conversation.Members, User);
     const [Messages, setMessages] = useState(Conversation.Messages);
 
     Socket.on('Chat:Typing', (data) => {
@@ -77,9 +81,9 @@ const Chat = ({ Conversation, Socket }) => {
                 <div className="row">
                     <div className="col">
                         <div className="row align-items-center">
-                            <img src={Member[0].UrlImage} className="rounded-circle ml-2" alt="Cinque Terre" height={30} width={30} />
+                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Cinque Terre" height={30} width={30} />
                             <div className="col">
-                                <p className="font-weight-bold text-white mb-0 ml-2">{Member[0].Username}</p>
+                                <p className="font-weight-bold text-white mb-0 ml-2">{isGroup ? Conversation.Group.DisplayName : Member[0].Username}</p>
                                 <div id="typing" className="text-info mb-0 ml-2"></div>
                             </div>
                         </div>
@@ -88,7 +92,7 @@ const Chat = ({ Conversation, Socket }) => {
             </div>
             <div className="card-body border-shadow overflow-auto" id="scroll" >
                 {
-                    Messages.map((item, index) => <Message Image={Conversation.Members[item.IndexUser].UrlImage} Username={Conversation.Members[item.IndexUser].Username} Message={item.Message}></Message>)
+                    Messages.map((item, index) => <Message Image={isGroup ? Conversation.Group.Members[item.IndexUser].UrlImage : Conversation.Members[item.IndexUser].UrlImage} Username={isGroup ? Conversation.Group.Members[item.IndexUser].Username : Conversation.Members[item.IndexUser].Username} Message={item.Message}></Message>)
                 }
             </div>
             <div className="card-footer">
@@ -100,7 +104,7 @@ const Chat = ({ Conversation, Socket }) => {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Chat;

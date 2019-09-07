@@ -60,7 +60,7 @@ const SignUp = ({ history }) => {
                                                 <div className="input-group-prepend">
                                                     <span className="input-group-text" id="user"><i className="fa fa-user"></i></span>
                                                 </div>
-                                                <input type="text" className="form-control" id="Username" placeholder="Username" aria-describedby="user" required minLength={4} maxLength={15}></input>
+                                                <input type="text" className="form-control" id="Username" placeholder="Username" aria-describedby="user" required minLength={4} maxLength={12}></input>
                                                 <div className="invalid-feedback">Please choose a unique and valid username.</div>
                                             </div>
                                             <div className="input-group pt-3">

@@ -4,7 +4,9 @@ export function _GetService(Token) { return _get('/Conversation', Token); }
 
 export function _GetOneService(Token, Id) { return _get('/Conversation/' + Id, Token); }
 
-export function _GetGroupsConversationsServices(Token) { return _get('/Conversation/Groups/All', Token); }
+export function _GetGroupsConversationsService(Token) { return _get('/Conversation/Groups/All', Token); }
+
+export function _GetOneGroupConversationService(Token, Id) { return _get('/Conversation/Groups/One/' + Id, Token); }
 
 export function _PostService(Conversation, Token) { return _post('/Conversation', Token, Conversation); }
 

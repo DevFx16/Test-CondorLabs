@@ -98,11 +98,45 @@ function _Logout(Token) {
 }
 
 //Change to chat
-function ChangeChat(id, Storage, Conversations, setConversations, setSelect) {
+function ChangeChat(id, Storage, Conversations, setConversations, setSelect, isGroup) {
+    if (isGroup) {
+        GetConversationGroupChat(id, setSelect, Storage.Token);
+    } else {
+        GetConversationChat(id, Conversations, setConversations, setSelect, Storage);
+    }
+}
+
+//get conversation group
+function GetConversationGroupChat(id, setSelect, Token) {
+    ConversationController._GetGroupOne(id, Token).then(conversation => {
+        if (conversation !== null && JSON.stringify({}) !== JSON.stringify(conversation)) {
+            setSelect(<Chat Conversation={conversation} Socket={Socket} isGroup={true}></Chat>)
+        }
+    }).catch(err => {
+        izitoast.error(err);
+    });
+}
+
+//get change image
+function ChangeImageProfile(Token, File, setUpdate) {
+    if (File.name !== undefined) {
+        _PutUpload(Token, File).then(user => {
+            if (user !== null && JSON.stringify({}) !== JSON.stringify(user)) {
+                localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
+                setUpdate(true);
+            }
+        }).catch(err => {
+            iziToast.error(err);
+        });
+    }
+}
+
+//get conversation
+function GetConversationChat(id, Conversations, setConversations, setSelect, Storage) {
     const { Token, User } = Storage;
     ConversationController._GetOne(Token, id).then(conversation => {
         if (conversation !== null && JSON.stringify({}) !== JSON.stringify(conversation)) {
-            setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
+            setSelect(<Chat Conversation={conversation} Socket={Socket} isGroup={false}></Chat>);
         } else {
             ConversationController._Post({ Members: [User._id, id] }, Token).then(conversation => {
                 setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
@@ -122,10 +156,11 @@ const Home = () => {
     var Local = JSON.parse(localStorage.getItem('User'));
 
     //variable that controls the main 
-    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)} />);
+    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false)} />);
     const [Groups, setGroups] = useState([]);
     const [Conversations, setConversations] = useState([]);
     const [SearchConversation, setSearchConversation] = useState([]);
+    const [Update, setUpdate] = useState(false)
     const ref = useRef(false);
 
     useEffect(() => {
@@ -145,6 +180,11 @@ const Home = () => {
         }
     });
 
+    useEffect(() => {
+        if (Update) Local = JSON.parse(localStorage.getItem('User'));
+        setUpdate(false);
+    }, [Update])
+
     if (Local != null) {
         const { User, Token } = Local;
 
@@ -153,18 +193,18 @@ const Home = () => {
                 <div className="row h-100">
                     <nav className="col-md-3 col-xl-2 d-none d-md-block bg-light sidebar gradient ">
                         <div className="row pt-3 justify-content-center">
-                            <div className="col-5 h-50">
+                            <div className="col-6 col-lg-5 col-xl-4 col-md-5 align-self-center">
                                 <div className="hovereffect rounded-circle float-right">
-                                    <img className="rounded-circle img-fluid float-right" src={User.UrlImage} width={96} height={96} />
+                                    <img className="rounded-circle img-fluid float-right" src={User.UrlImage} />
                                     <div className="overlay rounded-circle float-right">
-                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => _PutUpload(Token, files.target.files[0])} />
+                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setUpdate)} />
                                         <label for="imageUpload">
                                             <i className="fas fa-upload text-white"></i>
                                         </label>
                                     </div>
                                 </div>
                             </div>
-                            <div className="col">
+                            <div className="col align-self-center">
                                 <div className="row">
                                     <h6 className="text-center font-weight-bold text-white">
                                         {User.Username}
@@ -179,7 +219,7 @@ const Home = () => {
                             </div>
                         </div>
                         <div className="row w-100 justify-content-between mx-0 pt-3">
-                            <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)}></ListUsers>)}>
+                            <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false)}></ListUsers>)}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
                             <button type="button" className="btn btn-link text-white">
@@ -202,7 +242,7 @@ const Home = () => {
                         {
                             SearchConversation.length >= 1 ?
                                 <div className="row pt-3 justify-content-center">
-                                    <ListConversations Conversations={SearchConversation} Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)}></ListConversations>
+                                    <ListConversations Conversations={SearchConversation} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup)}></ListConversations>
                                 </div>
                                 :
                                 <div className="row pt-3 justify-content-center">
@@ -218,7 +258,7 @@ const Home = () => {
                                             </div>
                                             <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                                                 <div className="card-body px-0 pt-0 pb-0">
-                                                    <ListConversations Conversations={Conversations} Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)}></ListConversations>
+                                                    <ListConversations Conversations={Conversations} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup)}></ListConversations>
                                                 </div>
                                             </div>
                                         </div>
@@ -238,7 +278,7 @@ const Home = () => {
                                             </div>
                                             <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                                                 <div className="card-body px-0 pt-0 pb-0">
-                                                    <ListConversations Conversations={Groups} Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect)}></ListConversations>
+                                                    <ListConversations Conversations={Groups} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup)}></ListConversations>
                                                 </div>
                                             </div>
                                         </div>

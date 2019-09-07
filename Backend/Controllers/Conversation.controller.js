@@ -1,6 +1,6 @@
 const { Conversation, ConversationGroup } = require('../Models/Conversation.model');
 
-exports._Get = (req, res) => {
+exports._Get = async (req, res) => {
     Conversation.find().where('Members').in([req.headers._id])
         .populate({ path: 'Members', select: '-Password' }).then(conversation => {
             return res.status(200).send(conversation !== null ? conversation : {});
@@ -9,7 +9,7 @@ exports._Get = (req, res) => {
         });
 }
 
-exports._GetGroups = (req, res) => {
+exports._GetGroups = async (req, res) => {
     ConversationGroup.find().populate({
         path: 'Group', match: { 'Members': { '$in': [req.headers._id] } },
         populate: { path: 'Members', select: '-Password' }
@@ -20,7 +20,18 @@ exports._GetGroups = (req, res) => {
     });
 }
 
-exports._GetOne = (req, res) => {
+exports._GetOneGroup = async (req, res) => {
+    ConversationGroup.findOne({ '_id': req.params.Id }).populate({
+        path: 'Group', match: { 'Members': { '$in': [req.headers._id] } },
+        populate: { path: 'Members', select: '-Password' }
+    }).then(conversation => {
+        return res.status(200).send(conversation !== null ? conversation : {});
+    }).catch(err => {
+        return res.status(406).send(err);
+    });
+}
+
+exports._GetOne = async (req, res) => {
     Conversation.findOne().where('Members').all([req.headers._id, req.params.Id])
         .populate({ path: 'Members', select: '-Password' }).then(conversation => {
             return res.status(200).send(conversation !== null ? conversation : {});
@@ -29,7 +40,7 @@ exports._GetOne = (req, res) => {
         });
 }
 
-exports._Post = (req, res) => {
+exports._Post = async (req, res) => {
     new Conversation(req.body).save().then(conversation => {
         conversation.populate({ path: 'Members', select: '-Password' }, function (err) {
             return res.status(200).send(conversation !== null ? conversation : {});
@@ -39,7 +50,7 @@ exports._Post = (req, res) => {
     });
 }
 
-exports._Put = (req, res) => {
+exports._Put = async (req, res) => {
     Conversation.findByIdAndUpdate(req.params.Id, { '$push': { 'Messages': req.body } }, { new: true }).then(conversation => {
         return res.status(200).send(conversation !== null ? conversation : {});
     }).catch(err => {
@@ -47,7 +58,7 @@ exports._Put = (req, res) => {
     });
 }
 
-exports._Delete = (req, res) => {
+exports._Delete = async (req, res) => {
     Conversation.findOneAndDelete(req.params.Id).then(conversation => {
         return res.status(200).send(conversation !== null ? conversation : {});
     }).catch(err => {

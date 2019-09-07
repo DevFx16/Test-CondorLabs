@@ -1,7 +1,7 @@
 import { _GetService, _PostService } from '../Services/Group.service';
 import { ResponseUtil, customError } from '../Utils/Controllers.util';
 
-function _Get(Token) {
+async function _Get(Token) {
     return new Promise((resolve, reject) => {
         _GetService(Token).then(Response => {
             ResponseUtil(Response).then(user => {
@@ -15,7 +15,7 @@ function _Get(Token) {
     });
 }
 
-function _Post(Token, Group) {
+async function _Post(Token, Group) {
     return new Promise((resolve, reject) => {
         _PostService(Group, Token).then(Response => {
             ResponseUtil(Response).then(user => {
