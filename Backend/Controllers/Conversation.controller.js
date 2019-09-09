@@ -2,7 +2,8 @@ const { Conversation, ConversationGroup } = require('../Models/Conversation.mode
 
 exports._Get = async (req, res) => {
     Conversation.find().where('Members').in([req.headers._id])
-        .populate({ path: 'Members', select: '-Password' }).then(conversation => {
+        .populate({ path: 'Members', select: '-Password' })
+        .then(conversation => {
             return res.status(200).send(conversation !== null ? conversation : {});
         }).catch(err => {
             return res.status(406).send(err);
@@ -10,22 +11,20 @@ exports._Get = async (req, res) => {
 }
 
 exports._GetGroups = async (req, res) => {
-    ConversationGroup.find().populate({
-        path: 'Group',
-        populate: { path: 'Members', select: '-Password', match: { 'Members': { '$in': [req.headers._id] } } }
-    }).then(conversation => {
-        return res.status(200).send(conversation !== null ? conversation : {});
-    }).catch(err => {
-        return res.status(406).send(err);
-    });
+    ConversationGroup.find()
+        .populate({ path: 'Group', match: { 'Members': { '$in': [req.headers._id] } } }).then(conversation => {
+            return res.status(200).send(conversation !== null ? conversation.filter(item => item.Group !== null) : {});
+        }).catch(err => {
+            return res.status(406).send(err);
+        });
 }
 
 exports._GetOneGroup = async (req, res) => {
     ConversationGroup.findOne({ '_id': req.params.Id }).populate({
-        path: 'Group',
-        populate: { path: 'Members', select: '-Password', match: { 'Members': { '$in': [req.headers._id] } } }
+        path: 'Group', match: { 'Members': { '$in': [req.headers._id] } },
+        populate: { path: 'Members', select: '-Password' }
     }).then(conversation => {
-        return res.status(200).send(conversation !== null ? conversation : {});
+        return res.status(200).send(conversation !== null && conversation.Group !== null ? conversation : {});
     }).catch(err => {
         return res.status(406).send(err);
     });
@@ -52,6 +51,13 @@ exports._Post = async (req, res) => {
 
 exports._Put = async (req, res) => {
     Conversation.findByIdAndUpdate(req.params.Id, { '$push': { 'Messages': req.body } }, { new: true }).then(conversation => {
+        return res.status(200).send(conversation !== null ? conversation : {});
+    }).catch(err => {
+        return res.status(406).send(err);
+    });
+}
+exports._PutGroup = async (req, res) => {
+    ConversationGroup.findByIdAndUpdate(req.params.Id, { '$push': { 'Messages': req.body } }, { new: true }).then(conversation => {
         return res.status(200).send(conversation !== null ? conversation : {});
     }).catch(err => {
         return res.status(406).send(err);

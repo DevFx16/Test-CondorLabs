@@ -12,4 +12,6 @@ export function _PostService(Conversation, Token) { return _post('/Conversation'
 
 export function _PutService(Message, Id, Token) { return _put('/Conversation/' + Id, Token, Message); }
 
+export function _PutGroupService(Message, Id, Token) { return _put('/Conversation/Groups/' + Id, Token, Message); }
+
 export function _DeleteService(Token, Id) { return _delete('/Conversation/' + Id, Token); }

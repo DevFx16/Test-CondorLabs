@@ -12,11 +12,6 @@ export function ResponseUtil(Response) {
                 reject(err);
             });
         } else if (Response.status === 406) {
-            Response.json().then(body => {
-                console.log(body)
-            }).catch(err => {
-                console.log(err);
-            });
             reject({
                 title: 'Oops...',
                 message: 'Model is invlaid',

@@ -4,11 +4,11 @@ function Message({Image, Username, Message}) {
     const { User } = JSON.parse(localStorage.getItem('User'));
     const classIma = 'rounded-circle ';
     const ImageView = <div className="col-2 col-md-1 px-0 text-center">
-        <img src={Image} className={User.Username === Username ? classIma + 'mr-2' : classIma + 'ml-2'} alt="Cinque Terre" height={40} width={40} />
+        <img src={Image} className={User.Username === Username ? classIma + 'mr-2' : classIma + 'ml-2'} alt="Profile Photo" height={40} width={40} />
     </div>;
     const text = 'text-break text-white mb-0 ';
     return (
-        <div className="row animated fadeIn">
+        <div className="row animated fadeIn delay-1s pt-1">
             {
                 User.Username !== Username ? ImageView : null
             }

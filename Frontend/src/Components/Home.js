@@ -54,13 +54,13 @@ function _get(User, setGroups, setConversations) {
 }
 
 //search conversations
-function Search(text, Conversations, setSearchConversation) {
+function Search(text, Conversations, setSearchConversation, _Id) {
     if (text.target.value === '') {
         setSearchConversation([]);
     } else {
         setSearchConversation(Conversations.filter(item => {
             return item.Group === undefined ?
-                item.Members.filter(user => user.DisplayName.includes(text.target.value.toUpperCase())).length > 0 :
+                item.Members.filter(user => user._id !== _Id && user.DisplayName.includes(text.target.value.toUpperCase())).length > 0 :
                 item.Group.DisplayName.includes(text.target.value.toUpperCase())
         }));
     }
@@ -135,7 +135,7 @@ function GetConversationChat(id, Conversations, setConversations, setSelect, Sto
             setSelect(<Chat Conversation={conversation} Socket={Socket} isGroup={false}></Chat>);
         } else {
             ConversationController._Post({ Members: [User._id, id] }, Token).then(conversation => {
-                setSelect(<Chat Conversation={conversation} Socket={Socket}></Chat>);
+                setSelect(<Chat Conversation={conversation} Socket={Socket} isGroup={false}></Chat>);
                 setConversations(Conversations.concat([conversation]));
                 Socket.emit('Chat:Room', { Members: [User._id, id] });
             }).catch(err => {
@@ -181,10 +181,10 @@ const Home = () => {
             <div className="container-fluid h-100 animated fadeIn h-100">
                 <div className="row h-100">
                     <nav className="col-md-3 col-xl-2 d-none d-md-block bg-light sidebar gradient ">
-                        <div className="row pt-3 justify-content-center">
-                            <div className="col-6 col-md-5 col-lg-4 col-xl-5 pl-1 align-self-center">
+                        <div className="row pt-3 justify-content-center" style={{ height: '82px' }}>
+                            <div className="col-6 col-md-5 col-lg-4 col-xl-5 pl-1 align-self-center" style={{ height: '72px' }}>
                                 <div className="hovereffect rounded-circle float-left">
-                                    <img className="rounded-circle img-fluid" src={User.UrlImage} />
+                                    <img className="rounded-circle img-fluid" src={User.UrlImage} alt="Profile Photo"/>
                                     <div className="overlay rounded-circle">
                                         <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setLocal)} />
                                         <label for="imageUpload">
@@ -220,7 +220,7 @@ const Home = () => {
                         </div>
                         <div className="row pt-3 justify-content-center">
                             <div className="input-group w-75">
-                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" onChange={(text) => Search(text, Conversations.concat(Groups), setSearchConversation)} />
+                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" onChange={(text) => Search(text, Conversations.concat(Groups), setSearchConversation), Local.User._id} />
                                 <span className="input-group-append">
                                     <div className="btn btn-link border-left-0 border text-white">
                                         <i className="fa fa-search"></i>

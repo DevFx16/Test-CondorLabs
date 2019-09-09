@@ -7,22 +7,28 @@ function Submit(User, Socket, Add, Token, Tags) {
     var ids = [User._id];
     Tags.map((item, index) => ids.push(item._id));
     const Name = document.getElementById('Name').value;
-    if (Name !== null && Name !== '' && Name.length >= 4 && Name.length <= 30) {
-        GroupController._Post(Token, {
-            Members: ids,
-            DisplayName: Name.toUpperCase()
-        }).then(group => {
-            Add(group);
-            izitoast.success({
-                title: 'Created',
-                message: 'Group has been created'
+    if(ids.length >= 2){
+        if (Name !== null && Name !== '' && Name.length >= 4 && Name.length <= 30) {
+            GroupController._Post(Token, {
+                Members: ids,
+                DisplayName: Name.toUpperCase()
+            }).then(group => {
+                Add(group);
+                izitoast.success({
+                    title: 'Created',
+                    message: 'Group has been created'
+                });
+                Socket.emit('Chat:Room', { Members: ids });
+            }).catch(err => {
+                izitoast.error(err);
             });
-            Socket.emit('Chat:Room', { Members: ids });
-        }).catch(err => {
-            izitoast.error(err);
+        } else {
+            document.getElementById('form').classList.add('was-validated');
+        }
+    }else{
+        izitoast.error({
+            message: 'Not Members'
         });
-    } else {
-        document.getElementById('form').classList.add('was-validated');
     }
 }
 
