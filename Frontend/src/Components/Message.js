@@ -8,7 +8,7 @@ function Message({Image, Username, Message}) {
     </div>;
     const text = 'text-break text-white mb-0 ';
     return (
-        <div className="row animated fadeIn delay-1s pt-1">
+        <div className="row animated fadeIn delay-500ms pt-1">
             {
                 User.Username !== Username ? ImageView : null
             }

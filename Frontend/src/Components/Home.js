@@ -4,12 +4,13 @@ import ListConversations from './ListConversations';
 import Chat from './Chat';
 import ListUsers from './ListUsers';
 import izitoast from 'izitoast';
-import { _Put, _PutUpload } from '../Controllers/User.controller';
+import { _Put, _PutUpload, _Delete } from '../Controllers/User.controller';
 import ConversationController from '../Controllers/Conversation.controller';
 import AddGroup from './AddGroup';
 import Io from 'socket.io-client';
 import Modal from './Modal';
-import iziToast from 'izitoast';
+import NotificationSound from '../Sounds/notification.mp3';
+import UIfx from 'uifx';
 
 const Socket = Io();
 
@@ -22,6 +23,27 @@ function SocketConnect(User, setGroups, setConversations) {
         }
         _get(User, setGroups, setConversations);
     });
+}
+
+async function HandleMessage(ref, data) {
+    if (ref.current !== data.Room) {
+        izitoast.show({
+            title: data.Member.DisplayName,
+            class: 'animInsideTrue',
+            message: data.Message.Message,
+            position: 'bottomCenter',
+            animateInside: false,
+            image: data.Member.UrlImage,
+            imageWidth: 70,
+            displayMode: 2,
+            layout: 2,
+            transitionIn: 'bounceInUp',
+            transitionOut: 'fadeOutUp',
+            onOpened: () => {
+                new UIfx(NotificationSound, { volume: 1 }).play();
+            }
+        });
+    }
 }
 
 //Socket On Chat:Room
@@ -93,19 +115,47 @@ function _Logout(Token) {
     });
 }
 
+//delete user
+function _DeleteUser(Token) {
+    izitoast.question({
+        timeout: 20000,
+        close: false,
+        overlay: true,
+        displayMode: 'once',
+        id: 'question',
+        zindex: 999,
+        title: 'Hey',
+        message: 'are you sure to delete account?',
+        position: 'center',
+        buttons: [
+            ['<button><b>YES</b></button>', function (instance, toast) {
+                instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                _Delete(Token).then(user => {
+                    localStorage.clear();
+                    window.location.reload();
+                }).catch(err => {
+                    izitoast.error(err);
+                });
+            }, true],
+            ['<button>NO</button>', function (instance, toast) { instance.hide({ transitionOut: 'fadeOut' }, toast, 'button'); }],
+        ],
+    });
+}
+
 //Change to chat
-function ChangeChat(id, Storage, Conversations, setConversations, setSelect, isGroup) {
+function ChangeChat(id, Storage, Conversations, setConversations, setSelect, isGroup, ref) {
     if (isGroup) {
-        GetConversationGroupChat(id, setSelect, Storage.Token);
+        GetConversationGroupChat(id, setSelect, Storage.Token, ref);
     } else {
-        GetConversationChat(id, Conversations, setConversations, setSelect, Storage);
+        GetConversationChat(id, Conversations, setConversations, setSelect, Storage, ref);
     }
 }
 
 //get conversation group
-function GetConversationGroupChat(id, setSelect, Token) {
+function GetConversationGroupChat(id, setSelect, Token, ref) {
     ConversationController._GetGroupOne(id, Token).then(conversation => {
         if (conversation !== null && JSON.stringify({}) !== JSON.stringify(conversation)) {
+            ref.current = conversation._id;
             setSelect(<Chat Conversation={conversation} Socket={Socket} isGroup={true}></Chat>)
         }
     }).catch(err => {
@@ -113,28 +163,16 @@ function GetConversationGroupChat(id, setSelect, Token) {
     });
 }
 
-//get change image
-function ChangeImageProfile(Token, File, setLocal) {
-    if (File.name !== undefined) {
-        _PutUpload(Token, File).then(user => {
-            if (user !== null && JSON.stringify({}) !== JSON.stringify(user)) {
-                localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
-                setLocal(JSON.parse(localStorage.getItem('User')));
-            }
-        }).catch(err => {
-            iziToast.error(err);
-        });
-    }
-}
-
 //get conversation
-function GetConversationChat(id, Conversations, setConversations, setSelect, Storage) {
+function GetConversationChat(id, Conversations, setConversations, setSelect, Storage, ref) {
     const { Token, User } = Storage;
     ConversationController._GetOne(Token, id).then(conversation => {
         if (conversation !== null && JSON.stringify({}) !== JSON.stringify(conversation)) {
+            ref.current = conversation._id;
             setSelect(<Chat Conversation={conversation} Socket={Socket} isGroup={false}></Chat>);
         } else {
             ConversationController._Post({ Members: [User._id, id] }, Token).then(conversation => {
+                ref.current = conversation._id;
                 setSelect(<Chat Conversation={conversation} Socket={Socket} isGroup={false}></Chat>);
                 setConversations(Conversations.concat([conversation]));
                 Socket.emit('Chat:Room', { Members: [User._id, id] });
@@ -147,28 +185,47 @@ function GetConversationChat(id, Conversations, setConversations, setSelect, Sto
     });
 }
 
+//get change image
+function ChangeImageProfile(Token, File, setLocal) {
+    if (File.name !== undefined) {
+        _PutUpload(Token, File).then(user => {
+            if (user !== null && JSON.stringify({}) !== JSON.stringify(user)) {
+                document.getElementById('photo').src = user.UrlImage + '?' + Date.now();
+                localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
+                setLocal(JSON.parse(localStorage.getItem('User')));
+            }
+        }).catch(err => {
+            izitoast.error(err);
+        });
+    }
+}
+
 //Component
 const Home = () => {
+    const newMessage = useRef('');
+    const ref = useRef(false);
     const [Groups, setGroups] = useState([]);
     const [Conversations, setConversations] = useState([]);
     const [SearchConversation, setSearchConversation] = useState([]);
     const [Local, setLocal] = useState(JSON.parse(localStorage.getItem('User')));
-    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false)} />);
-    const ref = useRef(false);
+    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)} />);
 
     useEffect(() => {
-        if (!ref.current) {
-            _get(Local, setGroups, setConversations);
-            ref.current = true;
-        }
         if (Local !== null) {
+            if (!ref.current) {
+                _get(Local, setGroups, setConversations);
+                ref.current = true;
+            }
             const Handle = (data) => HandleRoom(Conversations.concat(Groups), data, setGroups, setConversations, Local);
             const HandleConnect = () => SocketConnect(Local, setGroups, setConversations);
+            const HandleMessageSocket = (data) => HandleMessage(newMessage, data);
             Socket.on('Chat:Room', Handle);
             Socket.on('connect', HandleConnect);
+            Socket.on('Chat:Message', HandleMessageSocket);
             return () => {
                 Socket.off('Chat:Room', Handle);
                 Socket.off('connect', HandleConnect);
+                Socket.off('Chat:Message', HandleMessageSocket);
             }
         }
     });
@@ -176,7 +233,7 @@ const Home = () => {
 
     if (Local != null) {
         const { User, Token } = Local;
-
+        console.log(User.UrlImage)
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
                 <div className="row h-100">
@@ -184,7 +241,7 @@ const Home = () => {
                         <div className="row pt-3 justify-content-center" style={{ height: '82px' }}>
                             <div className="col-6 col-md-5 col-lg-4 col-xl-5 pl-1 align-self-center" style={{ height: '72px' }}>
                                 <div className="hovereffect rounded-circle float-left">
-                                    <img className="rounded-circle img-fluid" src={User.UrlImage} alt="Profile Photo"/>
+                                    <img className="rounded-circle img-fluid" src={User.UrlImage} alt="Profile Photo" id="photo" />
                                     <div className="overlay rounded-circle">
                                         <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setLocal)} />
                                         <label for="imageUpload">
@@ -208,10 +265,13 @@ const Home = () => {
                             </div>
                         </div>
                         <div className="row w-100 justify-content-between mx-0 pt-3">
-                            <button type="button" className="btn btn-link text-white" onClick={() => setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false)}></ListUsers>)}>
+                            <button type="button" className="btn btn-link text-white" onClick={() => {
+                                newMessage.current = '';
+                                setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)}></ListUsers>)
+                            }}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
-                            <button type="button" className="btn btn-link text-white">
+                            <button type="button" className="btn btn-link text-white" onClick={_DeleteUser.bind(this)}>
                                 <i className="fas fa-user-times fa-lg"></i>
                             </button>
                             <button type="button" className="btn btn-link text-white" onClick={() => _Logout(Token)}>
@@ -231,7 +291,7 @@ const Home = () => {
                         {
                             SearchConversation.length >= 1 ?
                                 <div className="row pt-3 justify-content-center">
-                                    <ListConversations Conversations={SearchConversation} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup)}></ListConversations>
+                                    <ListConversations Conversations={SearchConversation} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup, newMessage)}></ListConversations>
                                 </div>
                                 :
                                 <div className="row pt-3 justify-content-center">
@@ -247,7 +307,7 @@ const Home = () => {
                                             </div>
                                             <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                                                 <div className="card-body px-0 pt-0 pb-0">
-                                                    <ListConversations Conversations={Conversations} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup)}></ListConversations>
+                                                    <ListConversations Conversations={Conversations} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup, newMessage)}></ListConversations>
                                                 </div>
                                             </div>
                                         </div>
@@ -267,7 +327,7 @@ const Home = () => {
                                             </div>
                                             <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                                                 <div className="card-body px-0 pt-0 pb-0">
-                                                    <ListConversations Conversations={Groups} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup)}></ListConversations>
+                                                    <ListConversations Conversations={Groups} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup, newMessage)}></ListConversations>
                                                 </div>
                                             </div>
                                         </div>

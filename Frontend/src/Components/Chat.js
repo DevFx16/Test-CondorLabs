@@ -2,14 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Message from './Message';
 import ConversationController from '../Controllers/Conversation.controller';
 import iziToast from 'izitoast';
+import UIfx from 'uifx';
+import ChatSound from '../Sounds/chat.mp3';
 
 //Socket on Chat:Message
 function HandlerMessage(data, _id, setMessages, Messages, Socket) {
     if (data.Room === _id) {
         Socket.emit('Chat:Typing', { Room: _id, Username: 'is not typing' });
         setMessages(Messages.concat([data.Message]));
-    } else {
-
+        new UIfx(ChatSound, { volume: 1}).play();
     }
 }
 
@@ -52,10 +53,6 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
     const IndexUser = isGroup ? FindIndex(Conversation.Group.Members, User) : FindIndex(Conversation.Members, User);
     const [Messages, setMessages] = useState(Conversation.Messages);
     const Change = useRef(true);
-    Socket.on('Chat:Typing', (data) => {
-        document.getElementById('typing').innerHTML = data.Room === Conversation._id && data.Username !== 'is not typing' ? `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
-        document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
-    });
 
     //useEffect for props
     useEffect(() => {
@@ -65,15 +62,22 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
 
     //useEffect for all
     useEffect(() => {
-        const handler = (data) => HandlerMessage(data, Conversation._id, setMessages, Messages, Socket);
+        const handler = (data) => HandlerMessage(data, Conversation._id, setMessages, Messages, Socket); 
+        const handleTyping = (data) => {
+            document.getElementById('typing').innerHTML = data.Room === Conversation._id && data.Username !== 'is not typing' ? `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
+            document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
+        }
         Socket.on('Chat:Message', handler);
+        Socket.on('Chat:Typing', handleTyping);
         return () => {
             Socket.off('Chat:Message', handler);
+            Socket.off('Chat:Typing', handleTyping);
         };
     })
 
     //useEffect for Messages
     useEffect(() => {
+        Change.current = true;
         document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
     }, [Messages]);
 
