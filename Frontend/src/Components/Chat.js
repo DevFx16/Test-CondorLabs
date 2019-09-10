@@ -34,7 +34,7 @@ function PushMessageConversation(text, IndexUser, Conversation, Token, Messages,
 //Data push new Message
 function PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Socket, isGroup) {
     const text = document.getElementById('Message').value;
-    if (text !== null && text !== '') {
+    if (text !== null && text !== '' && text.replace(/ /g,'').length !== 0) {
         if (isGroup)
             PushMessageConversation(text, IndexUser, Conversation, Token, Messages, setMessages, Socket, ConversationController._PutGroup, isGroup);
         else
