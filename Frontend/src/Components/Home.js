@@ -233,7 +233,6 @@ const Home = () => {
 
     if (Local != null) {
         const { User, Token } = Local;
-        console.log(User.UrlImage)
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
                 <div className="row h-100">

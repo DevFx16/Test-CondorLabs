@@ -17,7 +17,6 @@ export function _DeleteService(Token) { return _delete('/User', Token); }
 export function _PutImage(Image, Token) {
     var data = new FormData();
     data.append('image', Image);
-    console.log(data);
     return fetch('/User/Upload', {
         method: 'PUT',
         headers: new Headers({
