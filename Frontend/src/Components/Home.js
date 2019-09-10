@@ -186,17 +186,18 @@ function GetConversationChat(id, Conversations, setConversations, setSelect, Sto
 }
 
 //get change image
-function ChangeImageProfile(Token, File, setLocal) {
+async function ChangeImageProfile(Token, File, setLocal, setLoading) {
     if (File.name !== undefined) {
-        _PutUpload(Token, File).then(user => {
+        setLoading(true);
+        await _PutUpload(Token, File).then(user => {
             if (user !== null && JSON.stringify({}) !== JSON.stringify(user)) {
-                document.getElementById('photo').src = user.UrlImage + '?' + Date.now();
                 localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
                 setLocal(JSON.parse(localStorage.getItem('User')));
             }
         }).catch(err => {
             izitoast.error(err);
         });
+        setLoading(false);
     }
 }
 
@@ -209,6 +210,7 @@ const Home = () => {
     const [SearchConversation, setSearchConversation] = useState([]);
     const [Local, setLocal] = useState(JSON.parse(localStorage.getItem('User')));
     const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)} />);
+    const [Loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (Local !== null) {
@@ -230,6 +232,9 @@ const Home = () => {
         }
     });
 
+    useEffect(() => {
+        if (!Loading) document.getElementById('photo').src = Local.User.UrlImage + '?' + Date.now();
+    }, [Loading]);
 
     if (Local != null) {
         const { User, Token } = Local;
@@ -240,9 +245,13 @@ const Home = () => {
                         <div className="row pt-3 justify-content-center" style={{ height: '82px' }}>
                             <div className="col-6 col-md-5 col-lg-4 col-xl-5 pl-1 align-self-center" style={{ height: '72px' }}>
                                 <div className="hovereffect rounded-circle float-left">
-                                    <img className="rounded-circle img-fluid" src={User.UrlImage} alt="Profile Photo" id="photo" />
+                                    {
+                                        Loading ? <div class="spinner-border text-light" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div> : <img className="rounded-circle img-fluid" src={User.UrlImage} alt="Profile Photo" id="photo" onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                                    }
                                     <div className="overlay rounded-circle">
-                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setLocal)} />
+                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setLocal, setLoading)} />
                                         <label for="imageUpload">
                                             <i className="fas fa-upload text-white"></i>
                                         </label>

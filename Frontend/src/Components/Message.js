@@ -4,7 +4,7 @@ function Message({Image, Username, Message}) {
     const { User } = JSON.parse(localStorage.getItem('User'));
     const classIma = 'rounded-circle ';
     const ImageView = <div className="col-2 col-md-1 px-0 text-center">
-        <img src={Image} className={User.Username === Username ? classIma + 'mr-2' : classIma + 'ml-2'} alt="Profile Photo" height={40} width={40} />
+        <img src={Image} className={User.Username === Username ? classIma + 'mr-2' : classIma + 'ml-2'} alt="Profile Photo" height={40} width={40} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'}/>
     </div>;
     const text = 'text-break text-white mb-0 ';
     return (

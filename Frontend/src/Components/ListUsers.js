@@ -94,7 +94,7 @@ const ListUsers = ({ Change }) => {
                                         </div>
                                     </div>
                                     <div className="card-body align-self-center">
-                                        <img src={item.UrlImage} className="rounded" alt="Profile Photo" width={200} height={200} />
+                                        <img src={item.UrlImage} className="rounded" alt="Profile Photo" width={200} height={200} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'}/>
                                     </div>
                                     <div className="card-footer">
                                         <button type="button" className="btn btn-primary w-100 gradient" onClick={() => Change(item._id)}>

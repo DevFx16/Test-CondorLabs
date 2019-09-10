@@ -34,7 +34,7 @@ function PushMessageConversation(text, IndexUser, Conversation, Token, Messages,
 //Data push new Message
 function PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Socket, isGroup) {
     const text = document.getElementById('Message').value;
-    if (text !== null && text !== '' && text.replace(/ /g,'').length !== 0) {
+    if (text !== null && text !== '' && text.replace(/\s/g, '').length) {
         if (isGroup)
             PushMessageConversation(text, IndexUser, Conversation, Token, Messages, setMessages, Socket, ConversationController._PutGroup, isGroup);
         else
@@ -110,7 +110,7 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 <div className="row">
                     <div className="col">
                         <div className="row align-items-center">
-                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile Photo" height={30} width={30} />
+                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile Photo" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'}/>
                             <div className="col">
                                 <p className="font-weight-bold text-white mb-0 ml-2">{isGroup ? Conversation.Group.DisplayName : Member[0].Username}</p>
                                 <div id="typing" className="text-info mb-0 ml-2"></div>

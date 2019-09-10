@@ -73,7 +73,7 @@ const AddGroup = ({ Conversations, Add, Socket }) => {
                                                         <div className="row">
                                                             <div className="col">
                                                                 <div className="row align-items-center">
-                                                                    <img src={member[0].UrlImage} className="rounded-circle float-left" alt="Cinque Terre" width={25} height={25} />
+                                                                    <img src={member[0].UrlImage} className="rounded-circle float-left" alt="Cinque Terre" width={25} height={25} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'}/>
                                                                     <h6 className="text-center font-weight-bold text-black mb-0 ml-2" >
                                                                         {member[0].DisplayName}
                                                                     </h6>

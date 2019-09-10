@@ -7,7 +7,7 @@ export default function ListMessges({ Conversations, Change }) {
     function Button(click, src, name, index, isGroup) {
         return (
             <button className="list-group-item bg-transparent d-flex justify-content-start align-items-center" key={index} onClick={() => Change(click, isGroup)}>
-                <img src={src} className="rounded-circle float-left" alt="Cinque Terre" width={30} height={30} />
+                <img src={src} className="rounded-circle float-left" alt="Cinque Terre" width={30} height={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'}/>
                 <h6 className="text-center font-weight-bold text-white mb-0 ml-1">{name}</h6>
             </button>
         )

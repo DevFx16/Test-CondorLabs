@@ -1,6 +1,7 @@
 const { User } = require('../Models/User.model');
 const { CreateToken } = require('../Services/Auth.service');
-const { Storage } = require('../Config/App.config');
+const { Storage, Cloudinaryv2 } = require('../Config/App.config');
+const path = require('path');
 
 exports._Get = async (req, res) => {
     User.find().select('-Password')
@@ -43,10 +44,14 @@ exports._UploadImage = async (req, res) => {
     Storage(req.headers._id)(req, res, err => {
         if (err) return res.status(406).send(err);
         else {
-            User.findByIdAndUpdate(req.headers._id, { 'UrlImage': '/Images/' + req.file.filename }, { new: true }).then(user => {
-                return res.status(200).send(user !== null ? user : {});
-            }).catch(err => {
-                return res.status(406).send(err);
+            Cloudinaryv2.uploader.upload(req.file.path, { public_id: path.parse(req.file.filename).name }, function (err, image) {
+                if (err) return res.status(406).send(err);
+                require('fs').unlinkSync(req.file.path);
+                User.findByIdAndUpdate(req.headers._id, { 'UrlImage': image.url }, { new: true }).then(user => {
+                    return res.status(200).send(user !== null ? user : {});
+                }).catch(err => {
+                    return res.status(406).send(err);
+                });
             });
         }
     });
