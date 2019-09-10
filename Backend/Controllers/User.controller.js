@@ -47,7 +47,7 @@ exports._UploadImage = async (req, res) => {
             Cloudinaryv2.uploader.upload(req.file.path, { public_id: path.parse(req.file.filename).name }, function (err, image) {
                 if (err) return res.status(406).send(err);
                 require('fs').unlinkSync(req.file.path);
-                User.findByIdAndUpdate(req.headers._id, { 'UrlImage': image.url }, { new: true }).then(user => {
+                User.findByIdAndUpdate(req.headers._id, { 'UrlImage': image.secure_url }, { new: true }).then(user => {
                     return res.status(200).send(user !== null ? user : {});
                 }).catch(err => {
                     return res.status(406).send(err);

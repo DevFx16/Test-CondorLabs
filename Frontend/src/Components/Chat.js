@@ -10,7 +10,7 @@ function HandlerMessage(data, _id, setMessages, Messages, Socket) {
     if (data.Room === _id) {
         Socket.emit('Chat:Typing', { Room: _id, Username: 'is not typing' });
         setMessages(Messages.concat([data.Message]));
-        new UIfx(ChatSound, { volume: 1}).play();
+        new UIfx(ChatSound, { volume: 1 }).play();
     }
 }
 
@@ -56,13 +56,13 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
 
     //useEffect for props
     useEffect(() => {
-        Change.current = true;
         setMessages(Conversation.Messages);
+        Change.current = true;
     }, [Conversation._id]);
 
     //useEffect for all
     useEffect(() => {
-        const handler = (data) => HandlerMessage(data, Conversation._id, setMessages, Messages, Socket); 
+        const handler = (data) => HandlerMessage(data, Conversation._id, setMessages, Messages, Socket);
         const handleTyping = (data) => {
             document.getElementById('typing').innerHTML = data.Room === Conversation._id && data.Username !== 'is not typing' ? `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
             document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
@@ -77,8 +77,8 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
 
     //useEffect for Messages
     useEffect(() => {
-        Change.current = true;
         document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
+        Change.current = true;
     }, [Messages]);
 
     //Listener onchage text
@@ -97,8 +97,14 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
     function Body() {
         if (Change.current) {
             Change.current = false;
-            return Messages.map((item, index) =>
-                <Message Image={isGroup ? Conversation.Group.Members[item.IndexUser].UrlImage : Conversation.Members[item.IndexUser].UrlImage} Username={isGroup ? Conversation.Group.Members[item.IndexUser].Username : Conversation.Members[item.IndexUser].Username} Message={item.Message}></Message>);
+            return Messages.map((item, index) => {
+                var msg = isGroup ? Conversation.Group.Members[item.IndexUser] : Conversation.Members[item.IndexUser];
+                if (msg !== undefined) {
+                    return <Message Image={msg.UrlImage} Username={msg.Username} Message={item.Message}></Message>
+                } else {
+                    return null;
+                }
+            })
         } else {
             return null;
         }
@@ -110,7 +116,7 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 <div className="row">
                     <div className="col">
                         <div className="row align-items-center">
-                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile Photo" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'}/>
+                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile Photo" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                             <div className="col">
                                 <p className="font-weight-bold text-white mb-0 ml-2">{isGroup ? Conversation.Group.DisplayName : Member[0].Username}</p>
                                 <div id="typing" className="text-info mb-0 ml-2"></div>
