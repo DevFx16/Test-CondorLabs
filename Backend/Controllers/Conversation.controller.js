@@ -65,7 +65,7 @@ exports._PutGroup = async (req, res) => {
 }
 
 exports._Delete = async (req, res) => {
-    Conversation.findOneAndDelete(req.params.Id).then(conversation => {
+    Conversation.findByIdAndDelete(req.params.Id).then(conversation => {
         return res.status(200).send(conversation !== null ? conversation : {});
     }).catch(err => {
         return res.status(406).send(err);

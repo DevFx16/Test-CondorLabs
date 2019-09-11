@@ -69,7 +69,7 @@ exports._Put = async (req, res) => {
 
 exports._Delete = async (req, res) => {
     User.findByIdAndDelete(req.headers._id).then(user => {
-        Cloudinaryv2.api.delete_resources(user._id, (err, result) => { });
+        Cloudinaryv2.api.delete_resources([user._id], (err, result) => { });
         Group.updateMany({ '$pull': { 'Members': user._id } }).then(res => { }).catch(err => { });
         Conversation.deleteMany({ 'Members': { '$in': [user._id] } }).then(res => { }).catch(err => { });
         return res.status(200).send(user !== null ? user : {});
