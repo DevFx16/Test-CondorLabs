@@ -12,7 +12,12 @@ import Modal from './Modal';
 import NotificationSound from '../Sounds/notification.mp3';
 import UIfx from 'uifx';
 
-const Socket = Io();
+var Socket = Io({
+    transports: ['websocket'], upgrade: true, forceNew: true, reconnection: true,
+    reconnectionDelay: 3000,
+    reconnectionAttempts: 20,
+    forceNew: true
+});
 
 //Socket Connect
 function SocketConnect(User, setGroups, setConversations) {
@@ -20,6 +25,7 @@ function SocketConnect(User, setGroups, setConversations) {
     _Put(Token, { Status: true }).then(user => {
         if (user) {
             localStorage.setItem('User', JSON.stringify({ 'User': user, 'Token': Token }));
+            Socket.emit('Push', Token);
         }
         _get(User, setGroups, setConversations);
     });
