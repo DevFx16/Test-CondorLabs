@@ -117,9 +117,9 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                     <div className="col">
                         <div className="row align-items-center">
                             <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile Photo" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
-                            <div className="col">
-                                <p className="font-weight-bold text-white mb-0 ml-2">{isGroup ? Conversation.Group.DisplayName : Member[0].Username}</p>
-                                <div id="typing" className="text-info mb-0 ml-2"></div>
+                            <div className="col pl-1">
+                                <p className="font-weight-bold text-white mb-0 ml-1">{isGroup ? Conversation.Group.DisplayName : Member[0].Username}</p>
+                                <div id="typing" className="text-info mb-0 ml-1"></div>
                             </div>
                         </div>
                     </div>
