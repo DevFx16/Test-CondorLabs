@@ -102,7 +102,7 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 if (msg !== undefined) {
                     return <Message Image={msg.UrlImage} Username={msg.Username} Message={item.Message}></Message>
                 } else {
-                    return null;
+                    return <Message Image={''} Username={'User deleted'} Message={item.Message}></Message>;
                 }
             })
         } else {

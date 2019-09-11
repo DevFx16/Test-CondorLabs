@@ -239,10 +239,10 @@ const Home = () => {
     });
 
     useEffect(() => {
-        if (!Loading) document.getElementById('photo').src = Local.User.UrlImage + '?' + Date.now();
+        if (!Loading && Local !== null) document.getElementById('photo').src = Local.User.UrlImage + '?' + Date.now();
     }, [Loading]);
 
-    if (Local != null) {
+    if (Local !== null) {
         const { User, Token } = Local;
         return (
             <div className="container-fluid h-100 animated fadeIn h-100">
@@ -285,7 +285,7 @@ const Home = () => {
                             }}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
-                            <button type="button" className="btn btn-link text-white" onClick={_DeleteUser.bind(this)}>
+                            <button type="button" className="btn btn-link text-white" onClick={() => _DeleteUser(Token)}>
                                 <i className="fas fa-user-times fa-lg"></i>
                             </button>
                             <button type="button" className="btn btn-link text-white" onClick={() => _Logout(Token)}>

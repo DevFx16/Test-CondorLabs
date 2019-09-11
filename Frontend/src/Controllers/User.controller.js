@@ -81,7 +81,7 @@ export async function _Login(User) {
 
 export async function _Delete(Token) {
     return new Promise((resolve, reject) => {
-        _Delete(Token).then(Response => {
+        _DeleteService(Token).then(Response => {
             ResponseUtil(Response).then(user => {
                 resolve(user);
             }).catch(err => {

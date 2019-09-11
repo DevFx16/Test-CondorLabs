@@ -74,7 +74,7 @@ const ListUsers = ({ Change }) => {
                 <div className="row justify-content-start">
                     {
                         Users.map((item, index) =>
-                            <div className="col col-md-6 col-lg-5 col-xl-4 pb-2 align-self-center animated bounceIn">
+                            <div className="col col-md-6 col-lg-5 col-xl-4 pb-2 align-self-center animated bounceIn" key={index}>
                                 <div className="card bg-transparent mr-0 px-0" >
                                     <div className="card-header">
                                         <div className="row">

@@ -25,7 +25,7 @@ describe('Post /User', async () => {
     });
 });
 
-describe('Get /User', () => {
+describe('Get /User/:Skip', () => {
     it('Get all users skip 0', done => {
         Chai.request(Main)
             .get('/User/0')
