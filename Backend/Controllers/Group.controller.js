@@ -26,7 +26,7 @@ exports._Post = async (req, res) => {
 }
 
 exports._Put = async (req, res) => {
-    Group.findByIdAndUpdate(req.params.Id, { 'Members': { '$push': { '$each': req.body.Members } } }, { new: true }).then(message => {
+    Group.findByIdAndUpdate(req.params.Id, { '$push': { 'Members': { '$each': req.body.Members } } }, { new: true }).then(message => {
         return res.status(200).send(message !== null ? message : {});
     }).catch(err => {
         return res.status(406).send(err);
@@ -35,7 +35,7 @@ exports._Put = async (req, res) => {
 
 exports._Delete = async (req, res) => {
     Group.findByIdAndDelete(req.params.Id).then(group => {
-        ConversationGroup.remove({ 'Group': group._id });
+        ConversationGroup.deleteOne({ 'Group': group._id }).then(res => {}).catch(err => {});
         return res.status(200).send(group !== null ? group : {});
     }).catch(err => {
         return res.status(406).send(err);
@@ -43,7 +43,7 @@ exports._Delete = async (req, res) => {
 }
 
 exports._DeleteMember = async (req, res) => {
-    Group.findByIdAndDelete(req.params.Id, { '$pull': { 'Members': { '$elemMatch': req.body.Member } } }).then(message => {
+    Group.findByIdAndUpdate(req.params.Id, { '$pull': { 'Members': req.body.Member } }).then(message => {
         return res.status(200).send(message !== null ? message : {});
     }).catch(err => {
         return res.status(406).send(err);
