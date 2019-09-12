@@ -16,7 +16,6 @@ var Socket = Io({
     transports: ['websocket'], upgrade: true, forceNew: true, reconnection: true,
     reconnectionDelay: 3000,
     reconnectionAttempts: 20,
-    forceNew: true
 });
 
 //Socket Connect
