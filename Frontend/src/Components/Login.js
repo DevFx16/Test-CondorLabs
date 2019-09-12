@@ -40,10 +40,7 @@ const Login = ({ history }) => {
                     <div className="col align-self-center">
                         <div className="row align-items-center pb-5">
                             <div className="col align-self-center">
-                                <picture>
-                                    <source type="image/svg+xml" />
-                                    <img src="https://image.flaticon.com/icons/svg/174/174240.svg" className="rounded mx-auto d-block" alt="..." width={200} height={200} />
-                                </picture>
+                                    <img src="/favicon.png" className="rounded mx-auto d-block" alt="..." width={200} height={200} />
                             </div>
                         </div>
                         <div className="row justify-content-center">

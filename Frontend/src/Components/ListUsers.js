@@ -51,6 +51,12 @@ const ListUsers = ({ Change }) => {
             setUsers(Backup);
     }
 
+    //onKeyinput Enter
+    function KeyPress(event) {
+        if (event.which === 13 && !event.shiftKey)
+            Search(SkipSearch, Token, setUsers);
+    }
+
     return (
         <div className="card bg-transparent chat">
             <div className="card-header">
@@ -60,7 +66,7 @@ const ListUsers = ({ Change }) => {
                     </div>
                     <div className="col">
                         <div className="input-group w-100">
-                            <input className="form-control py-2 border-right-0 border bg-transparent text-white" id="search" type="search" placeholder="Search user for name" onChange={onChange.bind(this)} />
+                            <input className="form-control py-2 border-right-0 border bg-transparent text-white" id="search" type="search" placeholder="Search user for name" onChange={onChange.bind(this)} onKeyPress={KeyPress.bind(this)}/>
                             <span className="input-group-append">
                                 <button className="btn btn-link border-left-0 border text-white" onClick={() => Search(SkipSearch, Token, setUsers)}>
                                     <i className="fa fa-search"></i>
@@ -94,7 +100,7 @@ const ListUsers = ({ Change }) => {
                                         </div>
                                     </div>
                                     <div className="card-body align-self-center">
-                                        <img src={item.UrlImage} className="rounded" alt="Profile Photo" width={200} height={200} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'}/>
+                                        <img src={item.UrlImage} className="rounded" alt="Profile Photo" width={200} height={200} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                                     </div>
                                     <div className="card-footer">
                                         <button type="button" className="btn btn-primary w-100 gradient" onClick={() => Change(item._id)}>

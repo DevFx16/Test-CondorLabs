@@ -241,6 +241,12 @@ const Home = () => {
         if (!Loading && Local !== null) document.getElementById('photo').src = Local.User.UrlImage + '?' + Date.now();
     }, [Loading]);
 
+    useEffect(() => {
+        if (newMessage.current === '') {
+            setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)} />);
+        }
+    }, [Conversations]);
+
     if (Local !== null) {
         const { User, Token } = Local;
         return (
@@ -293,7 +299,7 @@ const Home = () => {
                         </div>
                         <div className="row pt-3 justify-content-center">
                             <div className="input-group w-75">
-                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" onChange={(text) => Search(text, Conversations.concat(Groups), setSearchConversation), Local.User._id} />
+                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" onChange={(text) => Search(text, Conversations.concat(Groups), setSearchConversation, Local.User._id)} />
                                 <span className="input-group-append">
                                     <div className="btn btn-link border-left-0 border text-white">
                                         <i className="fa fa-search"></i>

@@ -4,6 +4,10 @@ This is a test for Condor Labs
 
 **Note: NodeJs is required**
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/DevelopGadget/Test-CondorLabs/master/Frontend/public/favicon.png" title="Icon"/>
+</p>
+
 ## Run
 
 1. Install dependencies
@@ -42,8 +46,6 @@ run the command console in the project directory and excute
     npm run test
 ```
 
-## <a href="https://github.com/DevelopGadget/Test-CondorLabs/tree/master/Backend/readme.md" target="_blank">More Info Backend</a>
+## Bakcend
 
-## <a href="https://github.com/DevelopGadget/Test-CondorLabs/tree/master/Frontend/readme.md" target="_blank">More Info Frontend</a>
-
-## If there is any problem in the execution link displayed in heroku <a href="https://chat-condorlabs.herokuapp.com" target="_blank">Link</a>
+### If there is any problem in the execution link displayed in heroku <a href="https://chat-condorlabs.herokuapp.com" target="_blank">Link</a>
