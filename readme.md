@@ -9,23 +9,18 @@ This is a test for Condor Labs
 </p>
 
 <p align="center">
-    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/2.png?raw=true" title="Icon" width="50%"/>
+    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/2.png?raw=true" title="Icon" width="49%"/>
+    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/3.png?raw=true" title="Icon" width="49%"/>
+
 </p>
 
 <p align="center">
-    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/3.png?raw=true" title="Icon" width="50%"/>
+    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/1.png?raw=true" title="Icon" width="49%"/>
+    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/5.png?raw=true" title="Icon" width="49%"/>
 </p>
 
 <p align="center">
-    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/1.png?raw=true" title="Icon" width="50%"/>
-</p>
-
-<p align="center">
-    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/5.png?raw=true" title="Icon" width="50%"/>
-</p>
-
-<p align="center">
-    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/4.png?raw=true" title="Icon" width="50%"/>
+    <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Screen/4.png?raw=true" title="Icon" width="80%"/>
 </p>
 
 ## Run
