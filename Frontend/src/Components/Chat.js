@@ -4,6 +4,7 @@ import ConversationController from '../Controllers/Conversation.controller';
 import iziToast from 'izitoast';
 import UIfx from 'uifx';
 import ChatSound from '../Sounds/chat.mp3';
+import Modal from './Modal';
 
 //Socket on Chat:Message
 function HandlerMessage(data, _id, setMessages, Messages, Socket) {
@@ -123,6 +124,16 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                             </div>
                         </div>
                     </div>
+                    {
+                        isGroup ? <div className="col-1 align-self-center">
+                            <div className="row justify-content-center">
+                                <a>
+                                    <i className="fas fa-info-circle fa-lg text-white"></i>
+                                </a>
+                            </div>
+                        </div> : null
+                    }
+
                 </div>
             </div>
             <div className="card-body border-shadow overflow-auto" id="scroll" >
@@ -136,6 +147,9 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                     </div>
                 </div>
             </div>
+            {
+                isGroup ? <Modal Id="ModalInfo" Title="Information Group" Content></Modal> : null
+            }
         </div>
     );
 }
