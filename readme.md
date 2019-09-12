@@ -33,11 +33,11 @@ run the command console in the project directory and excute
     npm i
 ```
 
-2. Build Fronted
+2. Build Frontend
 
 Create a symbolic link from the node_modules folder to the Frontend directory or copy that folder to the directory
 
-run the command console in the Fronted/ directory and excute
+run the command console in the Frontend/ directory and excute
 
 ```
     npm run build

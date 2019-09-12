@@ -5,6 +5,7 @@ import iziToast from 'izitoast';
 import UIfx from 'uifx';
 import ChatSound from '../Sounds/chat.mp3';
 import Modal from './Modal';
+import InfoGroup from './InfoGroup';
 
 //Socket on Chat:Message
 function HandlerMessage(data, _id, setMessages, Messages, Socket) {
@@ -127,9 +128,9 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                     {
                         isGroup ? <div className="col-1 align-self-center">
                             <div className="row justify-content-center">
-                                <a>
+                                <button className="btn text-white" type="button" data-toggle="modal" data-target="#ModalInfo">
                                     <i className="fas fa-info-circle fa-lg text-white"></i>
-                                </a>
+                                </button>
                             </div>
                         </div> : null
                     }
@@ -148,7 +149,7 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 </div>
             </div>
             {
-                isGroup ? <Modal Id="ModalInfo" Title="Information Group" Content></Modal> : null
+                isGroup ? <Modal Id="ModalInfo" Title="Information Group" Content={<InfoGroup Group={Conversation.Group}></InfoGroup>}></Modal> : null
             }
         </div>
     );
