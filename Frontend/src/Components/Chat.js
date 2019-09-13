@@ -25,7 +25,14 @@ function PushMessageConversation(text, IndexUser, Conversation, Token, Messages,
         Socket.emit('Chat:Message', {
             Room: Conversation._id,
             Message: message.Messages[message.Messages.length - 1],
-            Member: isGroup ? Conversation.Group.Members[message.Messages[message.Messages.length - 1].IndexUser] : Conversation.Members[message.Messages[message.Messages.length - 1].IndexUser]
+            Member: isGroup ? { 
+                Member: Conversation.Group.Members[message.Messages[message.Messages.length - 1].IndexUser], 
+                Group: {
+                    UrlImage: Conversation.Group.UrlImage,
+                    DisplayName: Conversation.Group.DisplayName
+                } } : 
+                Conversation.Members[message.Messages[message.Messages.length - 1].IndexUser],
+            isGroup: isGroup
         });
         Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
         document.getElementById('Message').value = '';

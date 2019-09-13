@@ -33,12 +33,12 @@ function SocketConnect(User, setGroups, setConversations) {
 async function HandleMessage(ref, data) {
     if (ref.current !== data.Room) {
         izitoast.show({
-            title: data.Member.DisplayName,
+            title: data.isGroup ? data.Member.Group.DisplayName : data.Member.DisplayName,
             class: 'animInsideTrue',
-            message: data.Message.Message,
+            message: data.isGroup ? data.Member.Member.DisplayName + ': ' + data.Message.Message : data.Message.Message,
             position: 'bottomCenter',
             animateInside: false,
-            image: data.Member.UrlImage,
+            image: data.isGroup ? data.Member.Group.UrlImage : data.Member.UrlImage,
             imageWidth: 70,
             displayMode: 2,
             layout: 2,
