@@ -152,7 +152,7 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 </div>
             </div>
             {
-                isGroup ? <Modal Id="ModalInfo" Title="Information Group" Content={<InfoGroup Group={Conversation.Group} Token={Token} User={User} Image={ChangeImageGroup}></InfoGroup>}></Modal> : null
+                isGroup ? <Modal Id="ModalInfo" Title="Information Group" Content={<InfoGroup Group={Conversation.Group} Token={Token} User={User} Image={ChangeImageGroup} Socket={Socket}></InfoGroup>}></Modal> : null
             }
         </div>
     );

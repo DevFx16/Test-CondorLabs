@@ -28,11 +28,13 @@ exports._Post = async (req, res) => {
 }
 
 exports._Put = async (req, res) => {
-    Group.findByIdAndUpdate(req.params.Id, { '$push': { 'Members': { '$each': req.body.Members } } }, { new: true }).then(message => {
-        return res.status(200).send(message !== null ? message : {});
-    }).catch(err => {
-        return res.status(406).send(err);
-    });
+    Group.findByIdAndUpdate(req.params.Id, { '$push': { 'Members': { '$each': req.body.Members } } }, { new: true })
+        .where('Members').in([req.headers._id])
+        .populate({ path: 'Members', populate: { path: 'Members', select: '-Password' } }).then(message => {
+            return res.status(200).send(message !== null ? message : {});
+        }).catch(err => {
+            return res.status(406).send(err);
+        });
 }
 
 exports._Delete = async (req, res) => {

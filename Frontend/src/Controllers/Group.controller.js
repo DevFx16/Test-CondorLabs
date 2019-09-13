@@ -1,4 +1,4 @@
-import { _GetService, _PostService, _PutImage } from '../Services/Group.service';
+import { _GetService, _PostService, _PutImage, _PutService } from '../Services/Group.service';
 import { ResponseUtil, customError } from '../Utils/Controllers.util';
 
 async function _Get(Token) {
@@ -43,8 +43,23 @@ async function _PutUpload(Token, Image, Id) {
     });
 }
 
+async function _Put(Id, Member, Token) {
+    return new Promise((resolve, reject) => {
+        _PutService({ 'Members': [Member] }, Token, Id).then(Response => {
+            ResponseUtil(Response).then(user => {
+                resolve(user);
+            }).catch(err => {
+                reject(err);
+            });
+        }).catch(err => {
+            reject(customError);
+        });
+    });
+}
+
 export default {
     _Get,
     _Post,
-    _PutUpload
+    _PutUpload,
+    _Put
 }

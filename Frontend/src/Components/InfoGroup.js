@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import GroupController from '../Controllers/Group.controller';
+import ConversationController from '../Controllers/Conversation.controller';
 import izitoast from 'izitoast';
 
 //get change image
@@ -19,11 +20,47 @@ async function ChangeImageGroup(Token, File, setGroupState, setLoading, Id, Imag
     }
 }
 
-const InfoGroup = ({ Group, Token, Image }) => {
+//get conversations
+async function getConversations(Token, setConversations, Group) {
+    ConversationController._Get(Token).then(conversations => {
+        if (conversations !== null && conversations !== null && JSON.stringify({}) !== JSON.stringify(conversations)) {
+            var filter = [];
+            conversations.map((conversation, indexc) => {
+                conversation.Members.map((Member, indexco) => {
+                    var valid = true;
+                    Group.Members.map((MemberGroup, indexg) => {
+                        if (Member._id === MemberGroup._id) valid = false;
+                    });
+                    if (valid) filter.push(Member);
+                });
+            });
+            setConversations(filter);
+        }
+    });
+}
+
+//add Member
+async function AddMember(Id, Group, Token, setGroupState, index, Conversations, setConversations, Socket) {
+    GroupController._Put(Group._id, Id, Token).then(group => {
+        if (group !== null && JSON.stringify({}) !== JSON.stringify(group)) {
+            setGroupState(group);
+            Conversations.splice(index, 1);
+            setConversations([].concat(Conversations));
+            Socket.emit('Chat:Room', { Members: [Id] });
+        }
+    });
+}
+
+const InfoGroup = ({ Group, Token, Image, User, Socket }) => {
 
     const [Loading, setLoading] = useState(false);
     const [Conversations, setConversations] = useState([]);
     const [GroupState, setGroupState] = useState(Group);
+
+    useEffect(() => {
+        setGroupState(Group);
+        getConversations(Token, setConversations, Group);
+    }, [Group._id]);
 
     return (
         <div className="card gradient">
@@ -52,7 +89,7 @@ const InfoGroup = ({ Group, Token, Image }) => {
                                 GroupState.Members.map((Member, index) =>
                                     <div className="list-group-item bg-transparent d-flex justify-content-start align-items-center">
                                         <img src={Member.UrlImage} className="rounded-circle float-left" alt="Cinque Terre" width={30} height={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
-                                        <h6 className="text-center font-weight-bold text-white mb-0 ml-1">{Member.DisplayName}</h6>
+                                        <h6 className="text-center font-weight-bold text-white mb-0 ml-1">{Member._id !== User._id ? Member.DisplayName : 'You'}</h6>
                                     </div>
                                 )
                             }
@@ -65,9 +102,9 @@ const InfoGroup = ({ Group, Token, Image }) => {
                                 {
                                     Conversations.map((Member, index) =>
                                         <div className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
-                                            <img src={Member.UrlImage} className="rounded-circle float-left" alt="Cinque Terre" width={30} height={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                                            <img src={Member.UrlImage} className="rounded-circle float-left" alt="Profile" width={30} height={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                                             <h6 className="text-center font-weight-bold text-white mb-0 ml-1">{Member.DisplayName}</h6>
-                                            <button className="btn text-white float-right" type="button">
+                                            <button className="btn text-white float-right" type="button" onClick={() => AddMember(Member._id, Group, Token, setGroupState, index, Conversations, setConversations, Socket)}>
                                                 <span><i className="fas fa-plus-circle text-white"></i></span>
                                             </button>
                                         </div>
