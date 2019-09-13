@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 import { _Get, _GetName } from '../Controllers/User.controller';
 import izitoast from 'izitoast';
 
@@ -33,10 +33,10 @@ function Search(SkipSearch, Token, setUsers) {
 //Component
 const ListUsers = ({ Change }) => {
 
-    const [Skip, setSkip] = useState(0);
-    const [SkipSearch, setSkipSearch] = useState(0);
-    const [Users, setUsers] = useState([]);
-    const [Backup, setBackup] = useState([]);
+    const [Skip, setSkip] = useReducer((state, action) => action, 0);
+    const [SkipSearch] = useState(0);
+    const [Users, setUsers] = useReducer((state, action) => action, []);
+    const [Backup, setBackup] = useReducer((state, action) => action, []);
     const { Token } = JSON.parse(localStorage.getItem('User'));
     const ref = useRef(true);
 
@@ -100,7 +100,7 @@ const ListUsers = ({ Change }) => {
                                         </div>
                                     </div>
                                     <div className="card-body align-self-center">
-                                        <img src={item.UrlImage} className="rounded" alt="Profile Photo" width={200} height={200} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                                        <img src={item.UrlImage} className="rounded" alt="Profile" width={200} height={200} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                                     </div>
                                     <div className="card-footer">
                                         <button type="button" className="btn btn-primary w-100 gradient" onClick={() => Change(item._id)}>

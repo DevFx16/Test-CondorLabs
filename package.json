@@ -7,7 +7,8 @@
     "start": "node Main.js",
     "dev": "nodemon --ignore 'Frontend/build/*' --exec './run.sh'",
     "start:dev": "./run.sh",
-    "test": "mocha --timeout 10000 ./Backend/Tests/**/*.test.js"
+    "test": "mocha --timeout 10000 ./Backend/Tests/**/*.test.js",
+    "build": "terser-folder ./Backend -c -e -x .js"
   },
   "keywords": [],
   "author": "",

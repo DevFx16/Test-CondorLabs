@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 import { Redirect } from 'react-router-dom';
 import ListConversations from './ListConversations';
 import Chat from './Chat';
@@ -210,10 +210,10 @@ async function ChangeImageProfile(Token, File, setLocal, setLoading) {
 const Home = () => {
     const newMessage = useRef('');
     const ref = useRef(false);
-    const [Groups, setGroups] = useState([]);
-    const [Conversations, setConversations] = useState([]);
+    const [Groups, setGroups] = useReducer((state, action) => action, []);
+    const [Conversations, setConversations] = useReducer((state, action) => action, []);
     const [SearchConversation, setSearchConversation] = useState([]);
-    const [Local, setLocal] = useState(JSON.parse(localStorage.getItem('User')));
+    const [Local, setLocal] = useReducer((state, action) => action, JSON.parse(localStorage.getItem('User')));
     const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)} />);
     const [Loading, setLoading] = useState(false);
 
@@ -239,13 +239,13 @@ const Home = () => {
 
     useEffect(() => {
         if (!Loading && Local !== null) document.getElementById('photo').src = Local.User.UrlImage + '?' + Date.now();
-    }, [Loading]);
+    }, [Loading, Local]);
 
     useEffect(() => {
         if (newMessage.current === '') {
             setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)} />);
         }
-    }, [Conversations]);
+    }, [Conversations, Local]);
 
     if (Local !== null) {
         const { User, Token } = Local;
@@ -259,7 +259,7 @@ const Home = () => {
                                     {
                                         Loading ? <div class="spinner-border text-light" role="status">
                                             <span class="sr-only">Loading...</span>
-                                        </div> : <img className="rounded-circle img-fluid" src={User.UrlImage} alt="Profile Photo" id="photo" onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                                        </div> : <img className="rounded-circle img-fluid" src={User.UrlImage} alt="Profile" id="photo" onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                                     }
                                     <div className="overlay rounded-circle">
                                         <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setLocal, setLoading)} />

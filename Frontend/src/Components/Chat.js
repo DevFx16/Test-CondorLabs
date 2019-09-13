@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useReducer } from 'react';
 import Message from './Message';
 import ConversationController from '../Controllers/Conversation.controller';
 import iziToast from 'izitoast';
@@ -63,14 +63,14 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
     if (!isGroup)
         Member = Conversation.Members.filter(function (item) { return item._id !== User._id; });
     const IndexUser = isGroup ? FindIndex(Conversation.Group.Members, User) : FindIndex(Conversation.Members, User);
-    const [Messages, setMessages] = useState(Conversation.Messages);
+    const [Messages, setMessages] = useReducer((state, action) => action, Conversation.Messages);
     const Change = useRef(true);
 
     //useEffect for props
     useEffect(() => {
         setMessages(Conversation.Messages);
         Change.current = true;
-    }, [Conversation._id]);
+    }, [Conversation._id, Conversation.Messages]);
 
     //useEffect for all
     useEffect(() => {
@@ -128,7 +128,7 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 <div className="row">
                     <div className="col">
                         <div className="row align-items-center">
-                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile Photo" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} id="imageChat" />
+                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} id="imageChat" />
                             <div className="col pl-1">
                                 <p className="font-weight-bold text-white mb-0 ml-1">{isGroup ? Conversation.Group.DisplayName : Member[0].Username}</p>
                                 <div id="typing" className="text-info mb-0 ml-1"></div>

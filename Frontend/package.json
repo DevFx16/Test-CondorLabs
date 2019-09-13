@@ -5,6 +5,9 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
+  "rules": {
+    "no-script-url": 0
+  },
   "browserslist": {
     "production": [
       ">0.2%",

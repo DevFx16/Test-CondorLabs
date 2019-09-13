@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import GroupController from '../Controllers/Group.controller';
 import ConversationController from '../Controllers/Conversation.controller';
 import izitoast from 'izitoast';
@@ -26,12 +26,14 @@ async function getConversations(Token, setConversations, Group) {
         if (conversations !== null && conversations !== null && JSON.stringify({}) !== JSON.stringify(conversations)) {
             var filter = [];
             conversations.map((conversation, indexc) => {
-                conversation.Members.map((Member, indexco) => {
+                return conversation.Members.map((Member, indexco) => {
                     var valid = true;
                     Group.Members.map((MemberGroup, indexg) => {
                         if (Member._id === MemberGroup._id) valid = false;
+                        return valid;
                     });
                     if (valid) filter.push(Member);
+                    return valid;
                 });
             });
             setConversations(filter);
@@ -54,13 +56,13 @@ async function AddMember(Id, Group, Token, setGroupState, index, Conversations, 
 const InfoGroup = ({ Group, Token, Image, User, Socket }) => {
 
     const [Loading, setLoading] = useState(false);
-    const [Conversations, setConversations] = useState([]);
-    const [GroupState, setGroupState] = useState(Group);
+    const [Conversations, setConversations] = useReducer((state, action) => action, []);
+    const [GroupState, setGroupState] = useReducer((state, action) => action, Group);
 
     useEffect(() => {
         setGroupState(Group);
         getConversations(Token, setConversations, Group);
-    }, [Group._id]);
+    }, [Group._id, Token, Group]);
 
     return (
         <div className="card gradient">
@@ -70,7 +72,7 @@ const InfoGroup = ({ Group, Token, Image, User, Socket }) => {
                         {
                             Loading ? <div class="spinner-border text-light" role="status">
                                 <span class="sr-only">Loading...</span>
-                            </div> : <img className="rounded-circle img-fluid" src={GroupState.UrlImage} alt="Profile Photo" id="photo" onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                            </div> : <img className="rounded-circle img-fluid" src={GroupState.UrlImage} alt="Profile" id="photo" onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                         }
                         <div className="overlay rounded-circle">
                             <input type="file" name="image" id="image" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageGroup(Token, files.target.files[0], setGroupState, setLoading, GroupState._id, Image)} />
