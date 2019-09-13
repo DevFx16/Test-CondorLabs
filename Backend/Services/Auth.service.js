@@ -1,3 +1,6 @@
+/**
+ * Service json web token
+ */
 const JWT = require('jsonwebtoken');
 const Moment = require('moment');
 const { Config } = require('../Config/App.config');
@@ -29,7 +32,6 @@ exports.Decode = token => {
             }
             resolve(payload.sub)
         } catch (err) {
-            console.log(err);
             reject({
                 status: 500,
                 message: 'Invalid Token'

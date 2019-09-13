@@ -1,6 +1,7 @@
 import { _GetService, _LoginService, _PostService, _DeleteService, _GetNameService, _PutService, _PutImage, _GetIdService } from '../Services/User.service';
 import { ResponseUtil, customError } from '../Utils/Controllers.util';
 
+//get all users
 export async function _Get(Skip, Token) {
     return new Promise((resolve, reject) => {
         _GetService(Skip, Token).then(Response => {
@@ -15,6 +16,7 @@ export async function _Get(Skip, Token) {
     });
 };
 
+//get user id
 export async function _GetId(Token) {
     return new Promise((resolve, reject) => {
         _GetIdService(Token).then(Response => {
@@ -29,7 +31,7 @@ export async function _GetId(Token) {
     });
 };
 
-
+//get users by name
 export async function _GetName(Skip, Token, Name) {
     return new Promise((resolve, reject) => {
         _GetNameService(Skip, Token, Name).then(Response => {
@@ -44,6 +46,7 @@ export async function _GetName(Skip, Token, Name) {
     });
 };
 
+//new user
 export async function _Post(User) {
     return new Promise((resolve, reject) => {
         _PostService(User).then(Response => {
@@ -58,6 +61,7 @@ export async function _Post(User) {
     });
 };
 
+//login
 export async function _Login(User) {
     return new Promise((resolve, reject) => {
         _LoginService(User).then(Response => {
@@ -79,6 +83,7 @@ export async function _Login(User) {
     });
 };
 
+//delete
 export async function _Delete(Token) {
     return new Promise((resolve, reject) => {
         _DeleteService(Token).then(Response => {
@@ -93,6 +98,7 @@ export async function _Delete(Token) {
     });
 }
 
+//update user
 export async function _Put(Token, User) {
     return new Promise((resolve, reject) => {
         _PutService(User, Token).then(Response => {
@@ -107,6 +113,7 @@ export async function _Put(Token, User) {
     });
 }
 
+//change image user
 export async function _PutUpload(Token, Image) {
     return new Promise((resolve, reject) => {
         _PutImage(Image, Token).then(Response => {

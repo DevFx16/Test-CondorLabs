@@ -1,3 +1,6 @@
+/**
+ * validation model group
+ */
 const { Joi, celebrate } = require('celebrate');
 
 //Celebrate validation body

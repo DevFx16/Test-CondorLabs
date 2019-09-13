@@ -1,3 +1,6 @@
+/**
+ * Routing api group
+ */
 const { _Get, _Post, _Put, _Delete, _DeleteMember, _UploadImage } = require('../Controllers/Group.controller');
 const { isAuth } = require('../Middleware/Auth.middleware');
 const { GroupMiddleware } = require('../Middleware/Group.middleware');

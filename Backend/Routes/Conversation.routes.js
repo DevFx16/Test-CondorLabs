@@ -1,4 +1,8 @@
-const { _Get, _Post, _GetOne, _Delete, _Put, _GetGroups, _GetOneGroup, _PutGroup } = require('../Controllers/Conversation.controller');
+/**
+ * Routing api conversation
+ */
+const { _Get, _Post, _GetOne, _Delete, _Put, 
+    _GetGroups, _GetOneGroup, _PutGroup } = require('../Controllers/Conversation.controller');
 const { isAuth } = require('../Middleware/Auth.middleware');
 const { ConversationMiddleware, MessageMiddleware } = require('../Middleware/Conversation.middleware');
 

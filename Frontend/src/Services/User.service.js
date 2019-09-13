@@ -1,3 +1,6 @@
+/**
+ * Services and routing for api
+ */
 import { _delete, _get, _post, _put, _image } from '../Utils/Services.util';
 
 export function _GetService(Skip, Token) { return _get('/User/' + Skip, Token); }

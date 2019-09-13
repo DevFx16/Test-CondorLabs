@@ -1,3 +1,6 @@
+/**
+ * USER TEST
+ */
 const Chai = require('chai');
 const Http = require('chai-http');
 const Main = require('../../Main');

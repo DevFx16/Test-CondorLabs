@@ -25,17 +25,21 @@ function PushMessageConversation(text, IndexUser, Conversation, Token, Messages,
         Socket.emit('Chat:Message', {
             Room: Conversation._id,
             Message: message.Messages[message.Messages.length - 1],
-            Member: isGroup ? { 
-                Member: Conversation.Group.Members[message.Messages[message.Messages.length - 1].IndexUser], 
+            Member: isGroup ? {
+                //socket emit last message and group or user
+                Member: Conversation.Group.Members[message.Messages[message.Messages.length - 1].IndexUser],
                 Group: {
                     UrlImage: Conversation.Group.UrlImage,
                     DisplayName: Conversation.Group.DisplayName
-                } } : 
+                }
+            } :
                 Conversation.Members[message.Messages[message.Messages.length - 1].IndexUser],
             isGroup: isGroup
         });
         Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
+        //clear text area
         document.getElementById('Message').value = '';
+        //add new message array
         setMessages(Messages.concat([message.Messages[message.Messages.length - 1]]));
     }).catch(err => iziToast.error(err));
 }
@@ -45,9 +49,11 @@ function PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Sock
     const text = document.getElementById('Message').value;
     if (text !== null && text !== '' && text.replace(/\s/g, '').length) {
         if (isGroup)
-            PushMessageConversation(text, IndexUser, Conversation, Token, Messages, setMessages, Socket, ConversationController._PutGroup, isGroup);
+            PushMessageConversation(text, IndexUser, Conversation, Token, Messages,
+                setMessages, Socket, ConversationController._PutGroup, isGroup);
         else
-            PushMessageConversation(text, IndexUser, Conversation, Token, Messages, setMessages, Socket, ConversationController._Put, isGroup);
+            PushMessageConversation(text, IndexUser, Conversation, Token, Messages,
+                setMessages, Socket, ConversationController._Put, isGroup);
     }
 }
 
@@ -76,12 +82,15 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
     useEffect(() => {
         const handler = (data) => HandlerMessage(data, Conversation._id, setMessages, Messages, Socket);
         const handleTyping = (data) => {
-            document.getElementById('typing').innerHTML = data.Room === Conversation._id && data.Username !== 'is not typing' ? `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
+            document.getElementById('typing').innerHTML = data.Room ===
+                Conversation._id && data.Username !== 'is not typing' ?
+                `<h6 className="animated fadeIn">${data.Username} is typing...</h6>` : '';
             document.getElementById('scroll').scrollTop = document.getElementById('scroll').scrollHeight;
         }
         Socket.on('Chat:Message', handler);
         Socket.on('Chat:Typing', handleTyping);
         return () => {
+            //this is important so that the event is not repeated 
             Socket.off('Chat:Message', handler);
             Socket.off('Chat:Typing', handleTyping);
         };
@@ -99,7 +108,9 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
             Socket.emit('Chat:Typing', { Room: Conversation._id, Username: 'is not typing' });
     }
 
+    //Listener onkeypress
     function onKeyPress(event) {
+        //if enter sent message
         if (event.which === 13 && !event.shiftKey)
             PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Socket, isGroup)
         else
@@ -107,8 +118,10 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
     }
 
     function Body() {
+        //updated changes
         if (Change.current) {
             Change.current = false;
+            //return message in chat
             return Messages.map((item, index) => {
                 var msg = isGroup ? Conversation.Group.Members[item.IndexUser] : Conversation.Members[item.IndexUser];
                 if (msg !== undefined) {
@@ -128,9 +141,13 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 <div className="row">
                     <div className="col">
                         <div className="row align-items-center">
-                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} id="imageChat" />
+                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2"
+                                alt="Profile" height={30} width={30}
+                                onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} 
+                                id="imageChat" />
                             <div className="col pl-1">
-                                <p className="font-weight-bold text-white mb-0 ml-1">{isGroup ? Conversation.Group.DisplayName : Member[0].Username}</p>
+                                <p className="font-weight-bold text-white mb-0 ml-1">{isGroup ? Conversation.Group.DisplayName :
+                                    Member[0].Username}</p>
                                 <div id="typing" className="text-info mb-0 ml-1"></div>
                             </div>
                         </div>
@@ -152,14 +169,20 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
             </div>
             <div className="card-footer">
                 <div className="input-group">
-                    <textarea name="" className="form-control type_msg" placeholder="Type your message..." id="Message" style={{ resize: 'none' }} onKeyPress={onKeyPress.bind(this)} onChange={OnChange.bind(this)}></textarea>
+                    <textarea name="" className="form-control type_msg" placeholder="Type your message..." id="Message"
+                        style={{ resize: 'none' }} onKeyPress={onKeyPress.bind(this)} onChange={OnChange.bind(this)} />
                     <div className="input-group-append">
-                        <button className="input-group-text send_btn" onClick={() => PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Socket, isGroup)}><i className="fas fa-location-arrow"></i></button>
+                        <button className="input-group-text send_btn"
+                            onClick={() => PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Socket, isGroup)}>
+                            <i className="fas fa-location-arrow"></i>
+                        </button>
                     </div>
                 </div>
             </div>
             {
-                isGroup ? <Modal Id="ModalInfo" Title="Information Group" Content={<InfoGroup Group={Conversation.Group} Token={Token} User={User} Image={ChangeImageGroup} Socket={Socket}></InfoGroup>}></Modal> : null
+                isGroup ? <Modal Id="ModalInfo" Title="Information Group"
+                    Content={<InfoGroup Group={Conversation.Group} Token={Token} User={User}
+                        Image={ChangeImageGroup} Socket={Socket} />} /> : null
             }
         </div>
     );

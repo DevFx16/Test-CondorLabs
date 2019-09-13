@@ -1,6 +1,9 @@
-import { _GetService, _GetOneService, _PostService, _PutService, _GetGroupsConversationsService, _GetOneGroupConversationService, _PutGroupService } from '../Services/Conversation.service';
+import { _GetService, _GetOneService, _PostService, _PutService, 
+    _GetGroupsConversationsService, _GetOneGroupConversationService, _PutGroupService } 
+    from '../Services/Conversation.service';
 import { ResponseUtil, customError } from '../Utils/Controllers.util';
 
+//Get Conversations by id
 async function _Get(Token) {
     return new Promise((resolve, reject) => {
         _GetService(Token).then(Response => {
@@ -15,6 +18,7 @@ async function _Get(Token) {
     });
 }
 
+//get groups
 async function _GetGroups(Token) {
     return new Promise((resolve, reject) => {
         _GetGroupsConversationsService(Token).then(Response => {
@@ -29,6 +33,7 @@ async function _GetGroups(Token) {
     });
 }
 
+//get group by id
 async function _GetGroupOne(Id, Token) {
     return new Promise((resolve, reject) => {
         _GetOneGroupConversationService(Token, Id).then(Response => {
@@ -43,6 +48,7 @@ async function _GetGroupOne(Id, Token) {
     });
 }
 
+//get one conversation id
 async function _GetOne(Token, Id) {
     return new Promise((resolve, reject) => {
         _GetOneService(Token, Id).then(Response => {
@@ -57,6 +63,7 @@ async function _GetOne(Token, Id) {
     });
 }
 
+//new conversation
 async function _Post(Conversation, Token) {
     return new Promise((resolve, reject) => {
         _PostService(Conversation, Token).then(Response => {
@@ -71,6 +78,7 @@ async function _Post(Conversation, Token) {
     });
 }
 
+//add message
 async function _Put(Message, Token, Id) {
     return new Promise((resolve, reject) => {
         _PutService(Message, Id, Token).then(Response => {
@@ -85,6 +93,7 @@ async function _Put(Message, Token, Id) {
     });
 }
 
+//add message
 async function _PutGroup(Message, Token, Id) {
     return new Promise((resolve, reject) => {
         _PutGroupService(Message, Id, Token).then(Response => {

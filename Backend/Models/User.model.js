@@ -1,3 +1,6 @@
+/**
+ * Schema moongose User
+ */
 //Imports modules
 const Moongoose = require('mongoose');
 const schema = Moongoose.Schema;

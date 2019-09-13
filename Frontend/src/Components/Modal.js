@@ -2,7 +2,8 @@ import React from 'react'
 
 const Modal = ({ Id, Content, Title }) => {
     return (
-        <div class="modal fade" id={Id} tabindex="-1" role="dialog" aria-labelledby="Modal" aria-hidden="true" data-backdrop="false">
+        <div class="modal fade" id={Id} tabindex="-1" role="dialog" aria-labelledby="Modal" 
+        aria-hidden="true" data-backdrop="false">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

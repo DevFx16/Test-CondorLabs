@@ -1,3 +1,6 @@
+/**
+ * Services and routing for api
+ */
 import { _delete, _get, _post, _put } from '../Utils/Services.util';
 
 export function _GetService(Token) { return _get('/Conversation', Token); }

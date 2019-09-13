@@ -1,3 +1,6 @@
+/**
+ * Routing react client
+ */
 import React from 'react';
 import { render } from 'react-dom';
 import { HashRouter, Switch, Route } from 'react-router-dom';

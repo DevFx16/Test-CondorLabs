@@ -66,9 +66,12 @@ const ListUsers = ({ Change }) => {
                     </div>
                     <div className="col">
                         <div className="input-group w-100">
-                            <input className="form-control py-2 border-right-0 border bg-transparent text-white" id="search" type="search" placeholder="Search user for name" onChange={onChange.bind(this)} onKeyPress={KeyPress.bind(this)}/>
+                            <input className="form-control py-2 border-right-0 border bg-transparent text-white"
+                                id="search" type="search" placeholder="Search user for name"
+                                onChange={onChange.bind(this)} onKeyPress={KeyPress.bind(this)} />
                             <span className="input-group-append">
-                                <button className="btn btn-link border-left-0 border text-white" onClick={() => Search(SkipSearch, Token, setUsers)}>
+                                <button className="btn btn-link border-left-0 border text-white"
+                                    onClick={() => Search(SkipSearch, Token, setUsers)}>
                                     <i className="fa fa-search"></i>
                                 </button>
                             </span>
@@ -80,7 +83,8 @@ const ListUsers = ({ Change }) => {
                 <div className="row justify-content-start">
                     {
                         Users.map((item, index) =>
-                            <div className="col col-md-6 col-lg-5 col-xl-4 pb-2 align-self-center animated bounceIn" key={index}>
+                            <div className="col col-md-6 col-lg-5 col-xl-4 pb-2 align-self-center animated bounceIn"
+                                key={index}>
                                 <div className="card bg-transparent mr-0 px-0" >
                                     <div className="card-header">
                                         <div className="row">
@@ -92,18 +96,24 @@ const ListUsers = ({ Change }) => {
                                                 </div>
                                                 <div className="row ml-2">
                                                     <span>
-                                                        <i className="fas fa-meteor" style={{ color: item.Status ? 'green' : 'red' }}></i>
+                                                        <i className="fas fa-meteor"
+                                                            style={{ color: item.Status ? 'green' : 'red' }}></i>
                                                     </span>
-                                                    <h6 className="text-center ml-1 text-white">{item.Status ? 'Online' : 'Disconnected'}</h6>
+                                                    <h6 className="text-center ml-1 text-white">
+                                                        {item.Status ? 'Online' : 'Disconnected'}
+                                                    </h6>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="card-body align-self-center">
-                                        <img src={item.UrlImage} className="rounded" alt="Profile" width={200} height={200} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                                        <img src={item.UrlImage} className="rounded" alt="Profile" width={200} 
+                                        height={200} onError={(img) => 
+                                        img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                                     </div>
                                     <div className="card-footer">
-                                        <button type="button" className="btn btn-primary w-100 gradient" onClick={() => Change(item._id)}>
+                                        <button type="button" className="btn btn-primary w-100 gradient" 
+                                        onClick={() => Change(item._id)}>
                                             <p className="text-center font-weight-bold text-white mb-0">
                                                 <span className="pr-1"><i className="fas fa-sms fa-lg"></i></span>
                                                 Start conversation

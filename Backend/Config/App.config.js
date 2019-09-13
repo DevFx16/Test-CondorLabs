@@ -1,3 +1,6 @@
+/**
+ * Configuration file
+ */
 const Multer = require('multer');
 const path = require('path');
 const Cloudinary = require('cloudinary').v2;
@@ -9,6 +12,7 @@ exports.Config = {
     Token: 'KJSFHUASIFHWFIHhnfiufghskffjasdfkasdfhakjfhw2w846284284LNDLKFDNSJKLN'
 }
 
+//Storage configuration multer
 function disk(id) {
     return Multer.diskStorage({
         destination: path.join(__dirname, '../Uploads'),
@@ -18,6 +22,7 @@ function disk(id) {
     });
 }
 
+//Export Configuration multer
 exports.Storage = (id) => {
     return Multer({
         storage: disk(id),
@@ -26,6 +31,7 @@ exports.Storage = (id) => {
 }
 
 //this enviroment variables
+//Config Cloudinary
 Cloudinary.config({
     cloud_name: 'dmenzuvrf',
     api_key: '183231141131464',

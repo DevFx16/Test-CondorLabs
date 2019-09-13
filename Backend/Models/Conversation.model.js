@@ -1,7 +1,12 @@
+/**
+ * Schema moongose Conversations
+ */
 const Moongoose = require('mongoose');
 const schema = Moongoose.Schema;
 
+//Schema new message
 const Messages = new schema({
+    //user who sent it 
     IndexUser: { type: Number, required: true },
     Message: { type: String, required: true },
     CreateAt: { type: Date, default: Date.now }

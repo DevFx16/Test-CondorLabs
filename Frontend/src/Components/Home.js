@@ -30,8 +30,10 @@ function SocketConnect(User, setGroups, setConversations) {
     });
 }
 
+//listener new message
 async function HandleMessage(ref, data) {
     if (ref.current !== data.Room) {
+        //show new message
         izitoast.show({
             title: data.isGroup ? data.Member.Group.DisplayName : data.Member.DisplayName,
             class: 'animInsideTrue',
@@ -54,6 +56,7 @@ async function HandleMessage(ref, data) {
 //Socket On Chat:Room
 function HandleRoom(Conversations, room, setGroups, setConversations, Storage) {
     const { User } = Storage;
+    //validate new conversation
     if (room.Members.filter(item => item === User._id).length >= 1 && Conversations.filter(item => {
         return item.Group === undefined ?
             item.Members.filter(user => user._id === User._id) <= 0 :
@@ -87,7 +90,8 @@ function Search(text, Conversations, setSearchConversation, _Id) {
     } else {
         setSearchConversation(Conversations.filter(item => {
             return item.Group === undefined ?
-                item.Members.filter(user => user._id !== _Id && user.DisplayName.includes(text.target.value.toUpperCase())).length > 0 :
+                item.Members.filter(user => user._id !== _Id &&
+                    user.DisplayName.includes(text.target.value.toUpperCase())).length > 0 :
                 item.Group.DisplayName.includes(text.target.value.toUpperCase())
         }));
     }
@@ -142,7 +146,9 @@ function _DeleteUser(Token) {
                     izitoast.error(err);
                 });
             }, true],
-            ['<button>NO</button>', function (instance, toast) { instance.hide({ transitionOut: 'fadeOut' }, toast, 'button'); }],
+            ['<button>NO</button>', function (instance, toast) {
+                instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+            }],
         ],
     });
 }
@@ -172,6 +178,7 @@ function GetConversationGroupChat(id, setSelect, Token, ref) {
 function GetConversationChat(id, Conversations, setConversations, setSelect, Storage, ref) {
     const { Token, User } = Storage;
     ConversationController._GetOne(Token, id).then(conversation => {
+        //validate if it is not new 
         if (conversation !== null && JSON.stringify({}) !== JSON.stringify(conversation)) {
             ref.current = conversation._id;
             setSelect(<Chat Conversation={conversation} Socket={Socket} isGroup={false}></Chat>);
@@ -214,7 +221,8 @@ const Home = () => {
     const [Conversations, setConversations] = useReducer((state, action) => action, []);
     const [SearchConversation, setSearchConversation] = useState([]);
     const [Local, setLocal] = useReducer((state, action) => action, JSON.parse(localStorage.getItem('User')));
-    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)} />);
+    const [Select, setSelect] = useState(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations,
+        setConversations, setSelect, false, newMessage)} />);
     const [Loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -230,6 +238,7 @@ const Home = () => {
             Socket.on('connect', HandleConnect);
             Socket.on('Chat:Message', HandleMessageSocket);
             return () => {
+                //this is important so that the event is not repeated
                 Socket.off('Chat:Room', Handle);
                 Socket.off('connect', HandleConnect);
                 Socket.off('Chat:Message', HandleMessageSocket);
@@ -243,7 +252,8 @@ const Home = () => {
 
     useEffect(() => {
         if (newMessage.current === '') {
-            setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)} />);
+            setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations,
+                setSelect, false, newMessage)} />);
         }
     }, [Conversations, Local]);
 
@@ -254,15 +264,22 @@ const Home = () => {
                 <div className="row h-100">
                     <nav className="col-md-3 col-xl-2 d-none d-md-block bg-light sidebar gradient ">
                         <div className="row pt-3 justify-content-center" style={{ height: '82px' }}>
-                            <div className="col-6 col-md-5 col-lg-4 col-xl-5 pl-1 align-self-center" style={{ height: '72px' }}>
+                            <div className="col-6 col-md-5 col-lg-4 col-xl-5 pl-1 align-self-center"
+                                style={{ height: '72px' }}>
                                 <div className="hovereffect rounded-circle float-left">
                                     {
                                         Loading ? <div class="spinner-border text-light" role="status">
                                             <span class="sr-only">Loading...</span>
-                                        </div> : <img className="rounded-circle img-fluid" src={User.UrlImage} alt="Profile" id="photo" onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                                        </div> : <img className="rounded-circle img-fluid" src={User.UrlImage}
+                                            alt="Profile" id="photo"
+                                            onError={(img) =>
+                                                img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                                     }
                                     <div className="overlay rounded-circle">
-                                        <input type="file" name="imageUpload" id="imageUpload" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setLocal, setLoading)} />
+                                        <input type="file" name="imageUpload" id="imageUpload"
+                                            style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg"
+                                            onChange={(files) => ChangeImageProfile(Token, files.target.files[0], setLocal,
+                                                setLoading)} />
                                         <label for="imageUpload">
                                             <i className="fas fa-upload text-white"></i>
                                         </label>
@@ -286,7 +303,8 @@ const Home = () => {
                         <div className="row w-100 justify-content-between mx-0 pt-3">
                             <button type="button" className="btn btn-link text-white" onClick={() => {
                                 newMessage.current = '';
-                                setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations, setConversations, setSelect, false, newMessage)}></ListUsers>)
+                                setSelect(<ListUsers Change={(id) => ChangeChat(id, Local, Conversations,
+                                    setConversations, setSelect, false, newMessage)}/>)
                             }}>
                                 <i className="fas fa-users fa-lg"></i>
                             </button>
@@ -299,7 +317,10 @@ const Home = () => {
                         </div>
                         <div className="row pt-3 justify-content-center">
                             <div className="input-group w-75">
-                                <input className="form-control py-2 border-right-0 border bg-transparent text-white" type="search" placeholder="Seek conversation" onChange={(text) => Search(text, Conversations.concat(Groups), setSearchConversation, Local.User._id)} />
+                                <input className="form-control py-2 border-right-0 border bg-transparent text-white"
+                                    type="search" placeholder="Seek conversation"
+                                    onChange={(text) => Search(text, Conversations.concat(Groups), setSearchConversation,
+                                        Local.User._id)} />
                                 <span className="input-group-append">
                                     <div className="btn btn-link border-left-0 border text-white">
                                         <i className="fa fa-search"></i>
@@ -310,7 +331,9 @@ const Home = () => {
                         {
                             SearchConversation.length >= 1 ?
                                 <div className="row pt-3 justify-content-center">
-                                    <ListConversations Conversations={SearchConversation} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup, newMessage)}></ListConversations>
+                                    <ListConversations Conversations={SearchConversation}
+                                        Change={(id, isGroup) => ChangeChat(id, Local, Conversations,
+                                            setConversations, setSelect, isGroup, newMessage)} />
                                 </div>
                                 :
                                 <div className="row pt-3 justify-content-center">
@@ -318,15 +341,24 @@ const Home = () => {
                                         <div className="card bg-transparent w-100">
                                             <div className="card-header" id="headingOne">
                                                 <h2 className="mb-0">
-                                                    <button className="btn text-white w-100" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="collapse">
-                                                        <h6 className="text-center font-weight-bold text-white float-left">Direct Messages</h6>
-                                                        <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
+                                                    <button className="btn text-white w-100" type="button"
+                                                        data-toggle="collapse" data-target="#collapseOne"
+                                                        aria-expanded="true" aria-controls="collapseOne" id="collapse">
+                                                        <h6 className="text-center font-weight-bold text-white float-left">
+                                                            Direct Messages
+                                                        </h6>
+                                                        <span className="float-right">
+                                                            <i className="fas fa-angle-double-down text-white"></i>
+                                                        </span>
                                                     </button>
                                                 </h2>
                                             </div>
-                                            <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                            <div id="collapseOne" className="collapse show" aria-labelledby="headingOne"
+                                                data-parent="#accordionExample">
                                                 <div className="card-body px-0 pt-0 pb-0">
-                                                    <ListConversations Conversations={Conversations} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup, newMessage)}></ListConversations>
+                                                    <ListConversations Conversations={Conversations}
+                                                        Change={(id, isGroup) => ChangeChat(id, Local, Conversations,
+                                                            setConversations, setSelect, isGroup, newMessage)} />
                                                 </div>
                                             </div>
                                         </div>
@@ -334,19 +366,30 @@ const Home = () => {
                                             <div className="card-header" id="headingTwo">
                                                 <h2 className="mb-0">
                                                     <div className="row w-100 mx-0 justify-content-between">
-                                                        <button className="btn text-white w-75" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" id="collapse">
-                                                            <h6 className="text-center font-weight-bold text-white float-left">Groups</h6>
-                                                            <span className="float-right"><i className="fas fa-angle-double-down text-white"></i></span>
+                                                        <button className="btn text-white w-75" type="button"
+                                                            data-toggle="collapse" data-target="#collapseTwo"
+                                                            aria-expanded="true" aria-controls="collapseTwo" id="collapse">
+                                                            <h6 className="text-center font-weight-bold text-white float-left">
+                                                                Groups
+                                                            </h6>
+                                                            <span className="float-right">
+                                                                <i className="fas fa-angle-double-down text-white"></i>
+                                                            </span>
                                                         </button>
-                                                        <button className="btn text-white w-25" type="button" data-toggle="modal" data-target="#Modal">
-                                                            <span className="float-right"><i className="fas fa-plus-circle text-white"></i></span>
+                                                        <button className="btn text-white w-25" type="button"
+                                                            data-toggle="modal" data-target="#Modal">
+                                                            <span className="float-right"><i
+                                                                className="fas fa-plus-circle text-white"></i></span>
                                                         </button>
                                                     </div>
                                                 </h2>
                                             </div>
-                                            <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                            <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo"
+                                                data-parent="#accordionExample">
                                                 <div className="card-body px-0 pt-0 pb-0">
-                                                    <ListConversations Conversations={Groups} Change={(id, isGroup) => ChangeChat(id, Local, Conversations, setConversations, setSelect, isGroup, newMessage)}></ListConversations>
+                                                    <ListConversations Conversations={Groups}
+                                                        Change={(id, isGroup) => ChangeChat(id, Local, Conversations,
+                                                            setConversations, setSelect, isGroup, newMessage)} />
                                                 </div>
                                             </div>
                                         </div>
@@ -358,12 +401,13 @@ const Home = () => {
                         {Select}
                     </main>
                 </div>
-                <Modal Id="Modal" Title="Add Group" Content={<AddGroup Conversations={Conversations} Add={(group) => setGroups(Groups.concat(group))} Socket={Socket}></AddGroup>}></Modal>
+                <Modal Id="Modal" Title="Add Group" Content={<AddGroup Conversations={Conversations}
+                    Add={(group) => setGroups(Groups.concat(group))} Socket={Socket} />} />
             </div>
         );
     } else {
         return (
-            <Redirect to={{ pathname: '/Login' }}></Redirect>
+            <Redirect to={{ pathname: '/Login' }} />
         );
     }
 }

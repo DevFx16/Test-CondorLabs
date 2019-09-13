@@ -1,3 +1,6 @@
+/**
+ * Routing api user
+ */
 const { _Get, _Delete, _GetId, _Post, _Put, _Login, _GetName, _UploadImage } = require('../Controllers/User.controller');
 const { isAuth } = require('../Middleware/Auth.middleware');
 const { UserMiddleware, UserMiddlewareLogin } = require('../Middleware/User.middleware');

@@ -3,6 +3,7 @@
 This is a test for Condor Labs
 
 **Note: NodeJs is required**
+**Note: No Mobile responsive**
 
 <p align="center">
     <img src="https://github.com/DevelopGadget/Test-CondorLabs/blob/master/Frontend/public/favicon.png?raw=true" title="Icon" width="96" heigth="96"/>
@@ -90,4 +91,4 @@ run the command console in the project directory and excute
 
 
 
-### If there is any problem in the execution link displayed in heroku <a href="https://chat-condorlabs.herokuapp.com" target="_blank">Link</a>
+### link deploy in heroku <a href="https://chat-condorlabs.herokuapp.com" target="_blank">Link</a>

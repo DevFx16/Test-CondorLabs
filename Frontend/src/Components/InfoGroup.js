@@ -59,6 +59,7 @@ const InfoGroup = ({ Group, Token, Image, User, Socket }) => {
     const [Conversations, setConversations] = useReducer((state, action) => action, []);
     const [GroupState, setGroupState] = useReducer((state, action) => action, Group);
 
+    //useEffect for props
     useEffect(() => {
         setGroupState(Group);
         getConversations(Token, setConversations, Group);
@@ -72,10 +73,15 @@ const InfoGroup = ({ Group, Token, Image, User, Socket }) => {
                         {
                             Loading ? <div class="spinner-border text-light" role="status">
                                 <span class="sr-only">Loading...</span>
-                            </div> : <img className="rounded-circle img-fluid" src={GroupState.UrlImage} alt="Profile" id="photo" onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                            </div> : <img className="rounded-circle img-fluid" src={GroupState.UrlImage}
+                                alt="Profile" id="photo" onError={(img) =>
+                                    img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
                         }
                         <div className="overlay rounded-circle">
-                            <input type="file" name="image" id="image" style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg" onChange={(files) => ChangeImageGroup(Token, files.target.files[0], setGroupState, setLoading, GroupState._id, Image)} />
+                            <input type="file" name="image" id="image"
+                                style={{ visibility: 'hidden' }} accept="image/x-png,image/gif,image/jpeg"
+                                onChange={(files) => ChangeImageGroup(Token, files.target.files[0], setGroupState,
+                                    setLoading, GroupState._id, Image)} />
                             <label for="image">
                                 <i className="fas fa-upload text-white"></i>
                             </label>
@@ -89,9 +95,14 @@ const InfoGroup = ({ Group, Token, Image, User, Socket }) => {
                         <ul className="list-group w-100 bg-transparent" style={{ maxHeight: '170px' }}>
                             {
                                 GroupState.Members.map((Member, index) =>
-                                    <div className="list-group-item bg-transparent d-flex justify-content-start align-items-center">
-                                        <img src={Member.UrlImage} className="rounded-circle float-left" alt="Cinque Terre" width={30} height={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
-                                        <h6 className="text-center font-weight-bold text-white mb-0 ml-1">{Member._id !== User._id ? Member.DisplayName : 'You'}</h6>
+                                    <div
+                                        className="list-group-item bg-transparent d-flex justify-content-start align-items-center">
+                                        <img src={Member.UrlImage} className="rounded-circle float-left"
+                                            alt="Cinque Terre" width={30} height={30} onError={(img) =>
+                                                img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                                        <h6 className="text-center font-weight-bold text-white mb-0 ml-1">
+                                            {Member._id !== User._id ? Member.DisplayName : 'You'}
+                                        </h6>
                                     </div>
                                 )
                             }
@@ -103,10 +114,17 @@ const InfoGroup = ({ Group, Token, Image, User, Socket }) => {
                             <ul className="list-group w-100 bg-transparent" style={{ maxHeight: '170px' }}>
                                 {
                                     Conversations.map((Member, index) =>
-                                        <div className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
-                                            <img src={Member.UrlImage} className="rounded-circle float-left" alt="Profile" width={30} height={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
-                                            <h6 className="text-center font-weight-bold text-white mb-0 ml-1">{Member.DisplayName}</h6>
-                                            <button className="btn text-white float-right" type="button" onClick={() => AddMember(Member._id, Group, Token, setGroupState, index, Conversations, setConversations, Socket)}>
+                                        <div
+                                            className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                                            <img src={Member.UrlImage} className="rounded-circle float-left"
+                                                alt="Profile" width={30} height={30} onError={(img) =>
+                                                    img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                                            <h6 className="text-center font-weight-bold text-white mb-0 ml-1">
+                                                {Member.DisplayName}
+                                            </h6>
+                                            <button className="btn text-white float-right" type="button"
+                                                onClick={() => AddMember(Member._id, Group, Token, setGroupState, index,
+                                                    Conversations, setConversations, Socket)}>
                                                 <span><i className="fas fa-plus-circle text-white"></i></span>
                                             </button>
                                         </div>
