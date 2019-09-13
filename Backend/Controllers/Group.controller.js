@@ -37,7 +37,7 @@ exports._Put = async (req, res) => {
 
 exports._Delete = async (req, res) => {
     Group.findByIdAndDelete(req.params.Id).then(group => {
-        ConversationGroup.deleteOne({ 'Group': group._id }).then(res => {}).catch(err => {});
+        ConversationGroup.deleteOne({ 'Group': group._id }).then(res => { }).catch(err => { });
         return res.status(200).send(group !== null ? group : {});
     }).catch(err => {
         return res.status(406).send(err);
@@ -53,17 +53,20 @@ exports._DeleteMember = async (req, res) => {
 }
 
 exports._UploadImage = async (req, res) => {
-    Storage(req.params._id)(req, res, err => {
+    Storage(req.params.Id)(req, res, err => {
         if (err) return res.status(406).send(err);
         else {
             Cloudinaryv2.uploader.upload(req.file.path, { public_id: path.parse(req.file.filename).name }, function (err, image) {
                 if (err) return res.status(406).send(err);
                 require('fs').unlinkSync(req.file.path);
-                Group.findByIdAndUpdate(req.params._id, { 'UrlImage': image.secure_url }, { new: true }).then(user => {
-                    return res.status(200).send(user !== null ? user : {});
-                }).catch(err => {
-                    return res.status(406).send(err);
-                });
+                Group.findByIdAndUpdate(req.params.Id, { 'UrlImage': image.secure_url }, { new: true })
+                    .where('Members').in([req.headers._id])
+                    .populate({ path: 'Members', populate: { path: 'Members', select: '-Password' } })
+                    .then(user => {
+                        return res.status(200).send(user !== null ? user : {});
+                    }).catch(err => {
+                        return res.status(406).send(err);
+                    });
             });
         }
     });

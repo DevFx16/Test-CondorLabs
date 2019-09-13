@@ -46,6 +46,9 @@ function PushMessage(IndexUser, Conversation, Token, Messages, setMessages, Sock
 
 function FindIndex(Array, User) { return Array.findIndex(item => item._id === User._id); }
 
+//Change Image in chat
+function ChangeImageGroup(path) { document.getElementById('imageChat').src = path; }
+
 //Component
 const Chat = ({ Conversation, Socket, isGroup }) => {
     const { User, Token } = JSON.parse(localStorage.getItem('User'));
@@ -118,7 +121,7 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 <div className="row">
                     <div className="col">
                         <div className="row align-items-center">
-                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile Photo" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} />
+                            <img src={isGroup ? Conversation.Group.UrlImage : Member[0].UrlImage} className="rounded-circle ml-2" alt="Profile Photo" height={30} width={30} onError={(img) => img.target.src = 'https://image.flaticon.com/icons/svg/660/660611.svg'} id="imageChat" />
                             <div className="col pl-1">
                                 <p className="font-weight-bold text-white mb-0 ml-1">{isGroup ? Conversation.Group.DisplayName : Member[0].Username}</p>
                                 <div id="typing" className="text-info mb-0 ml-1"></div>
@@ -149,7 +152,7 @@ const Chat = ({ Conversation, Socket, isGroup }) => {
                 </div>
             </div>
             {
-                isGroup ? <Modal Id="ModalInfo" Title="Information Group" Content={<InfoGroup Group={Conversation.Group}></InfoGroup>}></Modal> : null
+                isGroup ? <Modal Id="ModalInfo" Title="Information Group" Content={<InfoGroup Group={Conversation.Group} Token={Token} User={User} Image={ChangeImageGroup}></InfoGroup>}></Modal> : null
             }
         </div>
     );
