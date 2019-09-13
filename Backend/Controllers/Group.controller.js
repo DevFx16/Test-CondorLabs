@@ -1,5 +1,7 @@
 const { Group } = require('../Models/Groups.model');
 const { ConversationGroup } = require('../Models/Conversation.model');
+const { Storage, Cloudinaryv2 } = require('../Config/App.config');
+const path = require('path');
 
 exports._Get = async (req, res) => {
     Group.find().where('Members').in([req.headers._id])
@@ -47,5 +49,22 @@ exports._DeleteMember = async (req, res) => {
         return res.status(200).send(message !== null ? message : {});
     }).catch(err => {
         return res.status(406).send(err);
+    });
+}
+
+exports._UploadImage = async (req, res) => {
+    Storage(req.params._id)(req, res, err => {
+        if (err) return res.status(406).send(err);
+        else {
+            Cloudinaryv2.uploader.upload(req.file.path, { public_id: path.parse(req.file.filename).name }, function (err, image) {
+                if (err) return res.status(406).send(err);
+                require('fs').unlinkSync(req.file.path);
+                Group.findByIdAndUpdate(req.params._id, { 'UrlImage': image.secure_url }, { new: true }).then(user => {
+                    return res.status(200).send(user !== null ? user : {});
+                }).catch(err => {
+                    return res.status(406).send(err);
+                });
+            });
+        }
     });
 }

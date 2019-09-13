@@ -1,4 +1,4 @@
-import { _delete, _get, _post, _put } from '../Utils/Services.util';
+import { _delete, _get, _post, _put, _image } from '../Utils/Services.util';
 
 export function _GetService(Skip, Token) { return _get('/User/' + Skip, Token); }
 
@@ -14,15 +14,4 @@ export function _LoginService(User) { return _post('/User/Login', '', User); }
 
 export function _DeleteService(Token) { return _delete('/User', Token); }
 
-export function _PutImage(Image, Token) {
-    var data = new FormData();
-    data.append('image', Image);
-    return fetch('/User/Upload', {
-        method: 'PUT',
-        headers: new Headers({
-            'authorization': 'Bearer ' + Token,
-        }),
-        mode: 'cors',
-        body: data
-    })
-}
+export function _PutImage(Image, Token) { return _image(Image, Token, '/User/Upload') }

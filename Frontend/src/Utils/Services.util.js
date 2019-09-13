@@ -55,3 +55,16 @@ export function _delete(Route, Token) {
         mode: 'cors',
     });
 }
+
+export function _image(Image, Token, Route) {
+    var data = new FormData();
+    data.append('image', Image);
+    return fetch(Route, {
+        method: 'PUT',
+        headers: new Headers({
+            'authorization': 'Bearer ' + Token,
+        }),
+        mode: 'cors',
+        body: data
+    });
+}
